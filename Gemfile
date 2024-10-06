@@ -30,6 +30,7 @@ gem 'aws-sdk-acmpca',          '~> 1'
 gem 'aws-sdk-s3',              '~> 1'
 gem 'ruby-prof',               '1.4.1'
 gem 'request_store',           '1.1.0'
+gem 'bigdecimal',              '1.3.0'
 
 # It's used in the dataimport and arcgis.
 # It's a replacement for the ruby uri that it's supposed to perform better parsing of a URI
