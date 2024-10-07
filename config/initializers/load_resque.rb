@@ -15,7 +15,7 @@ Resque::Failure.backend = Resque::Failure::Multiple
 
 ## Logging
 
-Resque.logger.level = :info
+Resque.logger.level = Logger::DEBUG
 
 logger_output = if Rails.env.production? || Rails.env.staging?
                   Carto::Conf.new.log_file_path('resque.log')
