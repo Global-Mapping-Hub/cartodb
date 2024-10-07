@@ -148,7 +148,7 @@ module CartoDB
         notification: notification,
         avatar_url: avatar,
         feature_flags: feature_flags_names,
-        base_url: public_url,
+        base_url: public_url.sub('http','https'),
         needs_password_confirmation: needs_password_confirmation?,
         viewer: viewer,
         org_admin: organization_admin?,
