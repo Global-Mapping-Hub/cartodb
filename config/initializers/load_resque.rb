@@ -15,6 +15,7 @@ Resque::Failure.backend = Resque::Failure::Multiple
 
 ## Logging
 
+Resque.logger.formatter = Resque::VerboseFormatter.new
 Resque.logger.level = Logger::DEBUG
 
 logger_output = if Rails.env.production? || Rails.env.staging?
