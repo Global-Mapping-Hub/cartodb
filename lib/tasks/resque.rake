@@ -31,7 +31,7 @@ namespace :resque do
     queues = Resque.queues
     queues.each do |queue_name|
       puts "Clearing #{queue_name}..."
-      Resque.redis.del "queue:#{queue_name}"
+      Resque.remove_queue("queue:#{queue_name}")
     end
     
     puts "Clearing delayed..." # in case of scheduler - doesn't break if no scheduler module is installed
@@ -43,5 +43,8 @@ namespace :resque do
     puts "Clearing stats..."
     Resque.redis.set "stat:failed", 0 
     Resque.redis.set "stat:processed", 0
+
+    puts "Clearing zombie workers..."
+    Resque.workers.each(&:prune_dead_workers)
   end
 end
