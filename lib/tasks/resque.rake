@@ -1,6 +1,9 @@
 namespace :resque do
 
   task "setup" => :environment do
+    # Clearing dead/stuck/zombie Resque workers
+    Resque.workers.each{|w| w.done_working}
+
     Resque.before_fork do |job|
       #we disconnect the worker so it reconnects on each job
       SequelRails.connection.disconnect 
