@@ -22,7 +22,7 @@ module.exports = merge(baseConfig, {
       new UglifyJsPlugin({
         cache: false,
         parallel: true,
-        sourceMap: false,
+        sourceMap: true,
         uglifyOptions: {
           keep_fnames: true,
           output: {
