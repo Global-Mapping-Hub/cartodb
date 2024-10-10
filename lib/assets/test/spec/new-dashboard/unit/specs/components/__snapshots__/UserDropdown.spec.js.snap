@@ -4,7 +4,7 @@ exports[`UserDropdown.vue should render dropdown closed 1`] = `
 <div class="navbar-dropdown is-open">
   <ul class="navbar-dropdown-container">
     <li class="navbar-dropdown-profile">
-      <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+      <div class="avatar-container"><img src="//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">
         <p class="text is-semibold is-caption">Test user</p>
         <p class="text is-small">user@test.com</p>
@@ -43,7 +43,7 @@ exports[`UserDropdown.vue should render dropdown open with notifications badge 1
 <div class="navbar-dropdown">
   <ul class="navbar-dropdown-container">
     <li class="navbar-dropdown-profile">
-      <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+      <div class="avatar-container"><img src="//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">
         <p class="text is-semibold is-caption">Test user</p>
         <p class="text is-small">user@test.com</p>
@@ -81,7 +81,7 @@ exports[`UserDropdown.vue should render organization link if user is org_admin 1
 <div class="navbar-dropdown is-open">
   <ul class="navbar-dropdown-container">
     <li class="navbar-dropdown-profile">
-      <div class="avatar-container"><img src="//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
+      <div class="avatar-container"><img src="//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png"></div>
       <div class="navbar-dropdown-userInfo">
         <p class="text is-semibold is-caption">Test user</p>
         <p class="text is-small">user@test.com</p>

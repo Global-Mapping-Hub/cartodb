@@ -11,7 +11,7 @@ exports[`NavigationBar.vue should have is-user-notification class when the user 
   <div class="navbar-elementsContainer navbar-searchContainer">
     <search-stub></search-stub>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <div class="navbar-avatar" style="background-image: url(//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
       <!---->
@@ -31,7 +31,7 @@ exports[`NavigationBar.vue should render regular navbar with search input open 1
   <div class="navbar-elementsContainer navbar-searchContainer">
     <search-stub></search-stub>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <div class="navbar-avatar" style="background-image: url(//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
       <!---->
@@ -51,7 +51,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   <div class="navbar-elementsContainer navbar-searchContainer">
     <search-stub></search-stub>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <div class="navbar-avatar" style="background-image: url(//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <!---->
       <!---->
@@ -71,7 +71,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown close
   <div class="navbar-elementsContainer navbar-searchContainer">
     <search-stub></search-stub>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <div class="navbar-avatar" style="background-image: url(//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]"></userdropdown-stub>
       <notificationpopup-stub title="FeedbackMessage.title" message="FeedbackMessage.message" class="notification-popup"></notificationpopup-stub>
       <!---->
@@ -91,7 +91,7 @@ exports[`NavigationBar.vue should render regular navbar with user dropdown open 
   <div class="navbar-elementsContainer navbar-searchContainer">
     <search-stub></search-stub>
     <div class="navbar-user">
-      <div class="navbar-avatar" style="background-image: url(//cartodb-libs.global.ssl.fastly.net/cartodbui/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
+      <div class="navbar-avatar" style="background-image: url(//cartodb.greenpeace.org/assets/unversioned/images/avatars/avatar_ghost_yellow.png);"></div>
       <userdropdown-stub baseurl="" usermodel="[object Object]" open="true"></userdropdown-stub>
       <!---->
       <!---->
