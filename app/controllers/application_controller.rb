@@ -31,6 +31,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from NoHTML5Compliant, :with => :no_html5_compliant
   rescue_from ActiveRecord::RecordNotFound, RecordNotFound, with: :render_404
+  rescue_from ActionController::RoutingError, with: :render_404
+  rescue_from ActionController::UnknownController, with: :render_404
   rescue_from Carto::ExpiredSessionError, with: :rescue_from_carto_error
 
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
