@@ -148,6 +148,10 @@ module CartoDB
         notification: notification,
         avatar_url: avatar,
         feature_flags: feature_flags_names,
+        test_base_url_1: public_url,
+        test_base_url_2: public_url.sub('http','https'),
+        test_base_url_3: public_url.sub(/^http:/, 'https:')
+        test_base_url_4: public_url.gsub(/http:/, 'https:')
         base_url: public_url.sub('http','https'),
         needs_password_confirmation: needs_password_confirmation?,
         viewer: viewer,
