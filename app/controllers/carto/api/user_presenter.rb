@@ -237,7 +237,7 @@ module Carto
           notification: @user.notification,
           avatar_url: @user.avatar,
           feature_flags: @user.feature_flags_names,
-          base_url: @user.public_url.sub('http','https'),,
+          base_url: @user.public_url.sub('http','https'),
           test_base_url_1: @user.public_url,
           test_base_url_2: @user.public_url.sub('http','https'),
           test_base_url_3: @user.public_url.gsub(/http:/, 'https:'),
