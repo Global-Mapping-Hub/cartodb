@@ -1,2 +1,2 @@
 #!/bin/sh
-TERM_CHILD=1 VVERBOSE=true QUEUE=imports,exports,users,user_dbs,geocodings,synchronizations,tracker,user_migrations,batch_updates,gears rake environment resque:work --trace
+BACKGROUND=yes PIDFILE=./tmp/resque.pid TERM_CHILD=1 VVERBOSE=true QUEUE=imports,exports,users,user_dbs,geocodings,synchronizations,tracker,user_migrations,batch_updates,gears rake environment resque:work --trace
