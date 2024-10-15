@@ -103,7 +103,7 @@ DESC
       puts "User #{user.username} created successfully"
 
       # 100 Gb of quota
-      quota = 10737418240
+      quota = 107374182400
       user.update(:quota_in_bytes => quota)
 
       user.db_service.rebuild_quota_trigger
