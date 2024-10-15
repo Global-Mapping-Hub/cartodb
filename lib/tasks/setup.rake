@@ -102,12 +102,12 @@ DESC
       user.save
       puts "User #{user.username} created successfully"
 
-      # 10 Gb of quota
-      quota = 1073741824
+      # 100 Gb of quota
+      quota = 10737418240
       user.update(:quota_in_bytes => quota)
 
       user.db_service.rebuild_quota_trigger
-      puts "User: #{user.username} quota updated to: 10 GB. #{user.tables.count} tables updated."
+      puts "User: #{user.username} quota updated to: 100 GB. #{user.tables.count} tables updated."
 
       user.update(:table_quota => nil)
       puts "User: #{user.username} table quota updated to: unlimited"
