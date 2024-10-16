@@ -84,9 +84,8 @@ DESC
       user.username = ENV['SUBDOMAIN']
       user.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
 
-      if ENV['BUILDER_ENABLED'] == "true"
-        user.builder_enabled = true
-      end
+      user.builder_enabled = true
+
 
       unless user.valid?
         puts
@@ -115,8 +114,22 @@ DESC
       user.update(:private_tables_enabled => true)
       puts "User: #{user.username} private tables enabled: true"
 
-      user.update(:account_type => '[DEDICATED]')
-      puts "User: #{user.username} table account type updated to: [DEDICATED]"
+      user.update(:private_maps_enabled => true)
+      puts "User: #{user.username} private maps enabled: true"
+
+      user.update(:postgres_enabled => true)
+      puts "User: #{user.username} postgres connector enabled: true"
+      user.update(:mysql_enabled => true)
+      puts "User: #{user.username} mysql connector enabled: true"
+      user.update(:redshift_enabled => true)
+      puts "User: #{user.username} redshift connector enabled: true"
+      user.update(:snowflake_enabled => true)
+      puts "User: #{user.username} snowflake connector enabled: true"
+      user.update(:sqlserver_enabled => true)
+      puts "User: #{user.username} sqlserver connector enabled: true"
+
+      user.update(:account_type => 'enterprise')
+      puts "User: #{user.username} table account type updated to: enterprise"
 
       user.update(:sync_tables_enabled => true)
       puts "User: #{user.username} sync tables enabled"
