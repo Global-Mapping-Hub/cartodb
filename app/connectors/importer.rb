@@ -10,6 +10,8 @@ module CartoDB
     class Importer
       include ::LoggerHelper
 
+      puts '>>>>> app/connectors/importer'
+
       ORIGIN_SCHEMA       = 'cdb_importer'
       DESTINATION_SCHEMA  = 'public'
       MAX_RENAME_RETRIES  = 20
@@ -50,9 +52,11 @@ module CartoDB
           overviews_creator: overviews_creator,
           log: runner.log
         )
+        puts 'initialized'
       end
 
       def run(tracker)
+        puts 'importer.runner.run'
         runner.run(&tracker)
 
         if quota_checker.will_be_over_table_quota?(results.length)
@@ -62,6 +66,7 @@ module CartoDB
         else
           check_map_quotas(runner.visualizations)
           check_dataset_quotas(runner.visualizations)
+          puts 'Proceeding to register'
           log('Proceeding to register')
           register_results(results)
           results.select(&:success?).each { |result| create_overviews(result) }

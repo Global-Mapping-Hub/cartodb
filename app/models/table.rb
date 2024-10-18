@@ -216,6 +216,7 @@ class Table
   ## Callbacks
 
   def import_to_cartodb(uniname = nil)
+    puts 'import_to_cartodb callback'
     if migrate_existing_table.present? || uniname
       data_import.data_type = DataImport::TYPE_EXTERNAL_TABLE if data_import.data_type.nil?
       data_import.data_source = migrate_existing_table || uniname

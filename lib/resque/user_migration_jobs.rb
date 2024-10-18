@@ -22,9 +22,11 @@ module Resque
       @queue = :user_migrations
 
       def self.perform(options = {})
+        puts 'UserMigrationImport'
         import = Carto::UserMigrationImport.find(options['import_id'])
         import.run_import
       rescue StandardError => e
+        puts e
         log_error(exception: e, message: 'Error importing user data', import: import.attributes)
         raise e
       end

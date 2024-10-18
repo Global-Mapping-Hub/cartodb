@@ -31,17 +31,20 @@ module Carto
     def run_import
       raise errors.full_messages.join(', ') unless valid?
 
+      puts '=== Downloading ==='
       log.append('=== Downloading ===')
       update_attributes(state: STATE_DOWNLOADING)
       package = UserMigrationPackage.for_import(id, log)
       package.download(exported_file)
 
+      puts '=== Importing ==='
       log.append('=== Importing ===')
       update_attributes(state: STATE_IMPORTING)
 
       service = (org_import? ? Carto::OrganizationMetadataExportService : Carto::UserMetadataExportService).new
       import(service, package)
 
+      puts '=== Complete ==='
       log.append('=== Complete ===')
       update_attributes(state: STATE_COMPLETE)
     rescue StandardError => e

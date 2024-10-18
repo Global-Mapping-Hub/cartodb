@@ -4,6 +4,7 @@ require_relative '../../app/helpers/file_upload'
 namespace :cartodb do
   desc 'Import a file to CartoDB. "times" parameter is there for load test purposes. Defaults to 1.'
   task :import, [:username, :filepath, :times] => [:environment] do |_task, args|
+    puts 'Import a file to CartoDB. "times" parameter is there for load test purposes. Defaults to 1.'
     times = (args[:times] || 1).to_i
     user        = ::User.where(username: args[:username]).first
     filepath    = File.expand_path(args[:filepath])
@@ -16,7 +17,10 @@ namespace :cartodb do
     )
     data_import.values[:data_source] = filepath
 
+    puts 'before data_import.run_import'
+
     (1..times).each do
+      puts 'do data_import.run_import'
       data_import.run_import!
       puts data_import.log
     end

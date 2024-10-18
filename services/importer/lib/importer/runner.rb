@@ -98,11 +98,14 @@ module CartoDB
       end
 
       def run_import(&tracker_block)
+        puts 'Importer2 uploading'
         @tracker = tracker_block
         tracker.call('uploading')
         @downloader.multi_resource_import_supported? ? multi_resource_import : single_resource_import
         self
       rescue StandardError => exception
+        puts 'Importer2 StandardError'
+        puts exception
         # Delete job temporary table from cdb_importer schema
         delete_job_table
 
@@ -163,11 +166,16 @@ module CartoDB
 
         tracker.call('importing')
         @job.log "Importing data from #{source_file.fullpath}"
+        puts "Importing data from #{source_file.fullpath}"
 
         @importer_stats.timing('resource') do
           @importer_stats.timing('quota_check') do
             file_size = File.size(source_file.fullpath)
             user_id = @user.id if @user
+            puts 'available_quota'
+            puts available_quota
+            puts 'requested_quota'
+            puts QUOTA_MAGIC_NUMBER * file_size
             raise_if_over_storage_quota(requested_quota: QUOTA_MAGIC_NUMBER * file_size,
                                         available_quota: available_quota,
                                         user_id: user_id)
@@ -212,6 +220,8 @@ module CartoDB
           error_detail: @job.logger.to_s, path: source_file.fullpath
         )
 
+        puts "Errored importing data from #{source_file.fullpath}"
+        puts exception
         @job.log "Errored importing data from #{source_file.fullpath}:"
         @job.log "#{exception.class.to_s}: #{exception.to_s}", truncate=false
         @job.log '----------------------------------------------------'

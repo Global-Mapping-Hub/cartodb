@@ -69,11 +69,25 @@ class Api::Json::ImportsController < Api::ApplicationController
           end
         end
 
+        puts '>>>> IMPORTER OPTIONS <<<<'
+        puts options
+
         # override param to store as string
         user_limits = ::JSON.dump(options[:user_defined_limits])
-        data_import = @stats_aggregator.timing('save') do
-          DataImport.create(options.merge!({ user_defined_limits: user_limits }))
-        end
+
+        puts 'user_limits'
+        puts user_limits
+
+        data_import = 
+          begin
+            created_data_import = DataImport.create(options.merge!({ user_defined_limits: user_limits }))
+            puts "Created DataImport: #{created_data_import.inspect}"
+            created_data_import
+          rescue => e
+            puts "Error creating DataImport: #{e.message}"
+            puts e.backtrace
+            nil
+          end
 
         if external_source.present?
           @stats_aggregator.timing('external-data-import.save') do
@@ -81,18 +95,29 @@ class Api::Json::ImportsController < Api::ApplicationController
               data_import_id: data_import.id,
               external_source_id: external_source.id
             ).save
+            puts 'Carto::ExternalDataImport'
           end
         end
 
+        puts 'data_import:'
+        puts data_import
+
+        puts '[][][] before Resque enqueue'
+
         Resque.enqueue(Resque::ImporterJobs, job_id: data_import.id) if options[:state] == DataImport::STATE_PENDING
+
+        puts '[][][] after Resque enqueue'
 
         render_jsonp({ item_queue_id: data_import.id, success: true })
       rescue CartoDB::Importer2::UserConcurrentImportsLimitError
+        puts 'CartoDB::Importer2::UserConcurrentImportsLimitError'
         rl_value = decrement_concurrent_imports_rate_limit
         render_jsonp({
                        errors: { imports: "We're sorry but you're already using your allowed #{rl_value} import slots" }
                      }, 429)
       rescue StandardError => ex
+        puts 'Error: create'
+        puts ex.message
         decrement_concurrent_imports_rate_limit
         log_info(message: 'Error: create', exception: ex)
         render_jsonp({ errors: { imports: ex.message } }, 400)

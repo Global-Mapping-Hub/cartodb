@@ -1,2 +1,2 @@
 #!/bin/sh
-TERM_CHILD=1 QUEUE=* rake environment resque:work --trace
+VVERBOSE=true TERM_CHILD=1 QUEUE=* bundle exec rake resque:work --trace

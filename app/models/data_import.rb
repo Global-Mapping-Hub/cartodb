@@ -64,6 +64,7 @@ class DataImport < Sequel::Model
 
   def after_initialize
     instantiate_log
+    puts 'after_initialize'
     self.results  = []
     self.state    ||= STATE_PENDING
   end
@@ -72,6 +73,7 @@ class DataImport < Sequel::Model
   # New ones are already tracked during the data_import create inside the controller
   # For the old dashboard
   def before_create
+    puts 'before_create'
     if from_common_data?
       self.extra_options = extra_options.merge(common_data: true)
     end
@@ -79,16 +81,27 @@ class DataImport < Sequel::Model
   end
 
   def before_save
-    unless logger.present?
-      log.save
-      self.logger = log.id
+    puts 'before_save'
+    begin
+      unless logger.present?
+        if log
+          log.save
+          self.logger = log.id
+        else
+          log.append('Log is nil in before_save; cannot save log')
+        end
+      end
+      self.updated_at = Time.now
+    rescue => e
+      log.append("Exception in before_save: #{e.message}")
+      raise e
     end
-    self.updated_at = Time.now
   end
 
   # The objective of this after_create method is to track in the logs every started
   # import process.
   def after_create
+    puts 'after_create'
     notify(results)
   end
 
@@ -120,9 +133,11 @@ class DataImport < Sequel::Model
   end
 
   def run_import!
+    puts 'run_import'
     self.resque_ppid = Process.ppid
     self.server = Socket.gethostname
     log.append("Running on server #{server} with PID: #{Process.pid}")
+    puts "Running on server #{server} with PID: #{Process.pid}"
 
     begin
       success = !!dispatch
@@ -136,6 +151,7 @@ class DataImport < Sequel::Model
       end
     end
 
+    puts 'After dispatch 2'
     log.append('After dispatch')
 
     if results.empty?
@@ -149,6 +165,8 @@ class DataImport < Sequel::Model
       save
     end
 
+    puts 'before handle_success/handle_failure'
+
     self.cartodbfy_time = CartoDB::Importer2::CartodbfyTime::instance(id).get
     success ? handle_success : handle_failure
     log.store
@@ -156,6 +174,7 @@ class DataImport < Sequel::Model
 
     self
   rescue CartoDB::QuotaExceeded => quota_exception
+    puts 'QuotaExceeded'
     current_user_id = current_user.id
     Carto::Tracking::Events::ExceededQuota.new(current_user_id, user_id: current_user_id).report
 
@@ -163,12 +182,14 @@ class DataImport < Sequel::Model
     handle_failure(quota_exception)
     self
   rescue CartoDB::CartoDBfyInvalidID
+    puts 'CartoDBfyInvalidID'
     invalid_cartodb_id_exception = CartoDB::Importer2::CartoDBfyInvalidID.new
     log.append("Exception: #{invalid_cartodb_id_exception}")
     CartoDB::notify_warning_exception(invalid_cartodb_id_exception)
     handle_failure(invalid_cartodb_id_exception)
     self
   rescue Carto::UnauthorizedError => e
+    puts e.message
     log.append("Exception: #{e.message}")
     log.append(e.backtrace, false)
     stacktrace = e.message + e.backtrace.join
@@ -177,6 +198,7 @@ class DataImport < Sequel::Model
     handle_failure(error)
     raise error
   rescue StandardError => exception
+    puts exception
     log.append("Exception: #{exception.to_s}")
     log.append(exception.backtrace, false)
     stacktrace = exception.to_s + exception.backtrace.join
@@ -195,6 +217,7 @@ class DataImport < Sequel::Model
   end
 
   def raise_over_table_quota_error
+    puts 'Over account table limit, please upgrade'
     log.append('Over account table limit, please upgrade')
     self.error_code = 8002
     self.state      = STATE_FAILURE
@@ -205,6 +228,10 @@ class DataImport < Sequel::Model
   # TODO: move to new model
   def mark_as_failed_if_stuck!
     return false unless stuck?
+
+    puts 'Import timed out'
+    puts 'state'
+    puts state
 
     log.append("Import timed out. Id:#{self.id} State:#{self.state} Created at:#{self.created_at} Running imports:#{running_import_ids}")
 
@@ -218,6 +245,11 @@ class DataImport < Sequel::Model
   end
 
   def data_source=(data_source)
+    puts 'data_source'
+    puts data_source
+    puts 'TYPE_QUERY'
+    puts TYPE_QUERY
+
     if data_source.nil?
       values[:data_type] = TYPE_DATASOURCE
       values[:data_source] = ''
@@ -236,6 +268,9 @@ class DataImport < Sequel::Model
         log_warning(message: 'InvalidURIError when processing data_source', data_source: data_source)
       end
     end
+
+    puts 'values'
+    puts values
 
     self.original_url = self.values[:data_source] if (self.original_url.to_s.length == 0)
 
@@ -277,6 +312,9 @@ class DataImport < Sequel::Model
   end
 
   def handle_failure(supplied_exception = nil)
+    puts 'handle_failure'
+    puts supplied_exception
+
     self.success    = false
     self.state      = STATE_FAILURE
     if !supplied_exception.nil? && supplied_exception.respond_to?(:error_code)
@@ -346,6 +384,11 @@ class DataImport < Sequel::Model
   end
 
   def dispatch
+    puts 'dispatch'
+    puts table_copy.present?
+    puts from_query.present?
+    puts service_name
+
     self.state = STATE_UPLOADING
     return from_table         if table_copy.present? || from_query.present?
 
@@ -355,6 +398,7 @@ class DataImport < Sequel::Model
       importer, runner, datasource_provider, manual_fields = new_importer
     end
     execute_importer importer, runner, datasource_provider, manual_fields
+    puts 'after dispatch'
   end
 
   def running_import_ids
@@ -375,19 +419,23 @@ class DataImport < Sequel::Model
 
   def instantiate_log
     uuid = logger
-
+    puts "instantiate_log: logger = #{logger.inspect}, uuid = #{uuid.inspect}"
+  
     self.log = if uuid?(uuid)
+                 puts "Looking for existing log with UUID #{uuid}"
                  Carto::Log.find(uuid.to_s)
                else
+                 puts "Creating new log for user_id #{user_id}"
                  Carto::Log.new_data_import(user_id)
                end
+    puts "instantiate_log: log = #{log.inspect}"
   end
 
   def uploaded_file
     data_source.to_s.match(/uploads\/([a-z0-9]{20})\/.*/)
   end
 
-  # A stuck job should've started but not be finished, so it's state should not be complete nor failed, it should
+  # A stuck job should've started but was not finished, so its state should neither be completed nor failed, it should
   # have been in the queue for more than 5 minutes and it shouldn't be currently processed by any active worker
   def stuck?
     state == STATE_STUCK ||
@@ -482,6 +530,7 @@ class DataImport < Sequel::Model
 
 
   def sanitize_columns(table_name)
+    puts 'sanitize_columns'
     # TODO: is this called before table is registered? otherwise we should use Table#sanitize_columns
     Table.sanitize_columns(
       table_name,
@@ -575,6 +624,7 @@ class DataImport < Sequel::Model
     manual_fields = {}
     had_errors = false
     log.append('new_importer()')
+    puts 'new_importer()'
 
     datasource_provider = get_datasource_provider
 
@@ -645,7 +695,9 @@ class DataImport < Sequel::Model
 
     if had_errors
       importer = runner = datasource_provider = nil
+      puts 'new importer had_errors'
     else
+      puts 'post_import_handler'
       post_import_handler = CartoDB::Importer2::PostImportHandler.new
       case datasource_provider.class::DATASOURCE_NAME
         when Url::ArcGIS::DATASOURCE_NAME
@@ -656,6 +708,10 @@ class DataImport < Sequel::Model
 
       database_options = pg_options
       self.host = database_options[:host]
+
+      puts 'database_options'
+      puts database_options
+      puts self
 
       unp = CartoDB::Importer2::Unp.new(Cartodb.config[:importer], Cartodb.config[:ogr2ogr])
 
@@ -670,6 +726,7 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * connector: the connector that the importer uses
   def new_importer_with_connector
+    puts 'new_importer_with_connector'
     provider_name = get_provider_name_from_id(service_item_id)
     CartoDB::Importer2::ConnectorRunner.check_availability!(current_user, provider_name)
 
@@ -709,6 +766,7 @@ class DataImport < Sequel::Model
   # * importer: the new importer (nil if download errors detected)
   # * runner: the runner that the importer uses
   def new_importer_with_runner(downloader, unpacker, post_import_handler)
+    puts 'new_importer_with_runner'
     runner = CartoDB::Importer2::Runner.new(
       pg: pg_options,
       downloader: downloader,
@@ -740,6 +798,9 @@ class DataImport < Sequel::Model
       collision_strategy: collision_strategy
     )
 
+    puts database
+    puts destination_schema
+
     [importer, runner]
   end
 
@@ -748,23 +809,29 @@ class DataImport < Sequel::Model
   # This methods returns an array with two elements:
   # * importer: the new importer (nil if download errors detected)
   def new_importer_with_unused_runner
+    puts 'new_importer_with_unused_runner'
     importer, = new_importer_with_runner(nil, nil, nil)
     importer
   end
 
   # Run importer, store results and return success state.
   def execute_importer(importer, runner, datasource_provider = nil, manual_fields = nil)
+    puts 'execute_importer'
     if importer
       tracker = lambda do |state|
         self.state = state
         save
       end
+      puts 'Before importer run'
       log.append('Before importer run')
       importer.run(tracker)
+      puts 'After importer run'
       log.append('After importer run')
     end
 
+    puts 'pre-store_results'
     store_results(importer, runner, datasource_provider, manual_fields)
+    puts 'post-store_results'
     importer.nil? ? false : importer.success?
   rescue StandardError => e
     # Note: If this exception is not treated, results will not be defined
@@ -781,6 +848,7 @@ class DataImport < Sequel::Model
   # @param datasource_provider mixed|nil
   # @param manual_fields Hash
   def store_results(importer=nil, runner=nil, datasource_provider=nil, manual_fields={})
+    puts 'store_results'
     if importer.nil?
       set_error(manual_fields.fetch(:error_code, 99999), manual_fields.fetch(:log_info, nil))
     else
@@ -820,6 +888,7 @@ class DataImport < Sequel::Model
   end
 
   def update_synchronization(importer)
+    puts 'update_synchronization'
     if synchronization_id
       log.type = Carto::Log::TYPE_SYNCHRONIZATION
       log.store
@@ -827,6 +896,11 @@ class DataImport < Sequel::Model
       synchronization = CartoDB::Synchronization::Member.new(id: synchronization_id).fetch
       synchronization.name    = self.table_name
       synchronization.log_id  = log.id
+
+      puts 'synchronization_id'
+      puts synchronization_id
+      puts 'importer'
+      puts importer
 
       if importer.success?
         imported_table = ::Table.get_by_table_id(self.table_id)
