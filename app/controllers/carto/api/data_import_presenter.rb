@@ -133,7 +133,10 @@ module Carto
       end
 
       def extract_filename(url)
-        URI.decode(File.basename(URI.parse(URI.encode(url.strip)).path))
+        escaped_url = URI::DEFAULT_PARSER.escape(url.strip)
+        uri = URI.parse(escaped_url)
+        filename = File.basename(uri.path)
+        URI::DEFAULT_PARSER.unescape(filename)
       end
 
       def extract_twitter_display_name(data_import)
