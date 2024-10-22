@@ -32,9 +32,6 @@ module CartoDB
         self.command_output = ''
         self.exit_code = 0
         set_default_properties
-
-        puts '>>>>>> Importer2 >>>>>> Ogr2ogr initialize'
-        puts self.inspect
       end
 
       def set_default_properties
@@ -86,7 +83,6 @@ module CartoDB
       end
 
       def run(use_append_mode=false)
-        puts '>>>>>> Importer2 >>>>>> Ogr2ogr run'
         @append_mode = use_append_mode
         open3_options = {
           rlimit_as: memory_limit
@@ -94,7 +90,6 @@ module CartoDB
         stdout, stderr, status  = Open3.capture3(environment, *command, open3_options)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
-        puts self.inspect
         self
       end
 

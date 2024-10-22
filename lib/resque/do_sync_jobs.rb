@@ -5,11 +5,8 @@ module Resque
     @queue = :imports
 
     def self.perform(options = {})
-      puts 'self.perform DoSyncJobs'
       run_action(options, @queue, lambda { |options|
         data_import = DataImport[options.symbolize_keys[:job_id]]
-
-        puts 'self.perform Resque DoSyncJobs'
 
         user = Carto::User.find(data_import.user_id)
         licensing_service = Carto::DoLicensingService.new(user.username)

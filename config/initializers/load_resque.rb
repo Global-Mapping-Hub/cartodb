@@ -18,7 +18,12 @@ Resque::Failure.backend = Resque::Failure::Multiple
 Resque.logger.formatter = Resque::VerboseFormatter.new
 Resque.logger.level = Logger::DEBUG
 
-logger_stdout = STDOUT.dup
-logger_stdout.sync = true
+logger_output = if Rails.env.production? || Rails.env.staging?
+                  Carto::Conf.new.log_file_path('resque.log')
+                else
+                  logger_stdout = STDOUT.dup
+                  logger_stdout.sync = Rails.env.development?
+                  logger_stdout
+                end
 
-Resque.logger = Carto::Common::Logger.new(logger_stdout)
+Resque.logger = Carto::Common::Logger.new(logger_output)

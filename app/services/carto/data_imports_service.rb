@@ -8,12 +8,9 @@ module Carto
     def initialize(users_metadata = $users_metadata, tables_metadata = $tables_metadata)
       @users_metadata = users_metadata
       @tables_metadata = tables_metadata
-
-      puts '[[[ DataImportsService ]]] initialize'
     end
 
     def process_recent_user_imports(user)
-      puts '[[[ DataImportsService ]]] process_recent_user_imports'
       imports = DataImportQueryBuilder.new.with_user(user).with_state_not_in([Carto::DataImport::STATE_COMPLETE, Carto::DataImport::STATE_FAILURE]).with_created_at_after(Time.now - 24.hours).with_order(:created_at, :desc).build.all
 
       running_ids = running_import_ids
@@ -30,11 +27,9 @@ module Carto
     end
 
     def process_by_id(id)
-      puts "[[[ DataImportsService ]]] process_by_id Id:#{id}"
       return nil if !uuid?(id)
 
       import = Carto::DataImport.where(id: id).first
-      puts import.inspect
 
       if stuck?(import)
         # INFO: failure because of stuck is handled with old model
