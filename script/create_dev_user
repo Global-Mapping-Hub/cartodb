@@ -18,8 +18,12 @@ else
 	echo -n "Enter an email: "; read EMAIL
 fi
 
+echo "--- Creating databases"
+bundle exec rake cartodb:db:setup
+
 echo "--- Creating dev user"
 bundle exec rake cartodb:db:create_dev_user --trace SUBDOMAIN="${SUBDOMAIN}" \
 	PASSWORD="${PASSWORD}" \
 	EMAIL="${EMAIL}"
+
 if test $? -ne 0; then exit 1; fi
