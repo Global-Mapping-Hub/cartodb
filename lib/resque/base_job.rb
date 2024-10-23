@@ -17,8 +17,6 @@ module Resque
     def self.run_action(options, queue_name, action)
       @@queue = queue_name
       begin
-        puts '>>> Resque >>> BaseJob >>> run_action'
-        puts options
         action.call(options)
       rescue Sequel::DatabaseDisconnectError => e
         puts "DatabaseDisconnectError: #{e.message}"
@@ -32,15 +30,12 @@ module Resque
             puts 'Retrying'
             retry
           else
-            puts e
             raise e
           end
         else
-          puts e
           raise e
         end
       rescue StandardError => e
-        puts e
         CartoDB.notify_exception(e)
         raise e
       end
