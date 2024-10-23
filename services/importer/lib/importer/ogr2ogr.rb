@@ -20,7 +20,7 @@ module CartoDB
       LONGITUDE_POSSIBLE_NAMES  = %w{ longitude lon lng
         longitudedecimal longitud long decimallongitude decimallong point_longitude }
 
-      DEFAULT_TIMEOUT = '1h'
+      DEFAULT_TIMEOUT = '10min'
 
 
       def initialize(table_name, filepath, pg_options, layer=nil, options={})
@@ -84,12 +84,25 @@ module CartoDB
 
       def run(use_append_mode=false)
         @append_mode = use_append_mode
+
+        puts '============ Ogr2ogr 1 ============'
+        puts self.inspect
+
+        puts '============ Ogr2ogr 2 ============'
+        puts open3_options.inspect
+        puts environment.inspect
+        puts command.inspect
+
         open3_options = {
           rlimit_as: memory_limit
         }
         stdout, stderr, status  = Open3.capture3(environment, *command, open3_options)
         self.command_output     = (stdout + stderr).encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '?????')
         self.exit_code          = status.to_i
+
+        puts '============ Ogr2ogr 3 ============'
+        puts self.inspect
+
         self
       end
 
