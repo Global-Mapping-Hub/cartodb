@@ -68,12 +68,14 @@ module CartoDB
       def convert_from_wkt
         #TODO: @capture_exceptions
         job.log 'Converting geometry from WKT to WKB'
+        puts 'Converting geometry from WKT to WKB'
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                  UPDATE #{qualified_table_name}
                                  SET "#{column_name}" = ST_GeomFromText("#{column_name}", #{DEFAULT_SRID})
                                  })
         end
+        puts 'AFTER ---- Converting geometry from WKT to WKB'
         self
       end
 
@@ -87,6 +89,7 @@ module CartoDB
 
         # 2) Normal geojson behavior
         #TODO: @capture_exceptions
+        puts 'Converting geometry from GeoJSON with transform to WKB'
         job.log 'Converting geometry from GeoJSON with transform to WKB'
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
@@ -94,12 +97,13 @@ module CartoDB
                                  SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromGeoJSON("#{column_name}"), #{DEFAULT_SRID})
                                  })
         end
-
+        puts 'AFTER ---- Converting geometry from GeoJSON with transform to WKB'
         self
       end
 
       def convert_from_geojson
         #TODO: @capture_exceptions
+        puts 'Converting geometry from GeoJSON to WKB'
         job.log 'Converting geometry from GeoJSON to WKB'
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
@@ -107,12 +111,13 @@ module CartoDB
                                  SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromGeoJSON("#{column_name}"), #{DEFAULT_SRID})
                                  })
         end
-
+        puts 'AFTER ---- Converting geometry from GeoJSON to WKB'
         self
       end
 
       def convert_from_kml_point
         #TODO: @capture_exceptions
+        puts 'Converting geometry from KML point to WKB'
         job.log 'Converting geometry from KML point to WKB'
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
@@ -120,10 +125,12 @@ module CartoDB
                                  SET "#{column_name}" = public.ST_SetSRID(public.ST_GeomFromKML("#{column_name}"),#{DEFAULT_SRID})
                                  })
         end
+        puts 'AFTER ---- Converting geometry from KML point to WKB'
       end
 
       def convert_from_kml_multi
         #TODO: @capture_exceptions
+        puts 'Converting geometry from KML multi to WKB'
         job.log 'Converting geometry from KML multi to WKB'
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
@@ -131,10 +138,12 @@ module CartoDB
                                  SET "#{column_name}" = public.ST_SetSRID(public.ST_Multi(public.ST_GeomFromKML("#{column_name}")),#{DEFAULT_SRID})
                                  })
         end
+        puts 'AFTER ---- Converting geometry from KML multi to WKB'
       end
 
       def convert_to_2d
         #TODO: @capture_exceptions
+        puts 'Converting to 2D point'
         job.log 'Converting to 2D point'
 
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
@@ -143,6 +152,7 @@ module CartoDB
                                  SET "#{column_name}" = public.ST_Force2D("#{column_name}")
                                  })
         end
+        puts 'AFTER ---- Converting to 2D point'
 
       end
 
@@ -168,7 +178,7 @@ module CartoDB
 
       def cast_to(type)
         job.log "casting #{column_name} to #{type}"
-
+        puts "casting #{column_name} to #{type}"
         @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
           user_direct_conn.run(%Q{
                                     ALTER TABLE #{qualified_table_name}
@@ -177,6 +187,7 @@ module CartoDB
                                     USING "#{column_name}"::#{type}
                                   })
         end
+        puts "AFTER ---- casting #{column_name} to #{type}"
         self
       end
 
@@ -241,6 +252,7 @@ module CartoDB
         end
         if column_type != nil && column_type == :string
           #TODO: @capture_exceptions
+          puts 'string column found, replacing'
           job.log 'string column found, replacing'
           @user.db_service.in_database_direct_connection(statement_timeout: DIRECT_STATEMENT_TIMEOUT) do |user_direct_conn|
             user_direct_conn.run(%Q{
@@ -249,6 +261,7 @@ module CartoDB
                    WHERE "#{column_name}"=''
                  })
           end
+          puts 'AFTER ---- string column found, replacing'
         else
           job.log 'no string column found, nothing replaced'
         end

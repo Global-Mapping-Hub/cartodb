@@ -28,8 +28,11 @@ module CartoDB
       end
 
       def run(&tracker)
+        puts '>>>> Adapter.Synchronization.CartoDB RUN'
         runner.run(&tracker)
         result = runner.results.select(&:success?).first
+
+        puts result.inspect
 
         if runner.remote_data_updated?
           if result.nil?
@@ -200,6 +203,9 @@ module CartoDB
       # returns type to run Table#get_the_geom_type! afterwards again, which
       # saves the type in table metadata
       def fix_the_geom_type!(schema_name, table_name)
+
+        puts '>>>> Adapter.Synchronization.CartoDB fix_the_geom_type'
+
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
         type = nil
@@ -232,14 +238,21 @@ module CartoDB
 
         # if the geometry is MULTIPOINT we convert it to POINT
         if type == 'multipoint'
+
+          puts '>>>> Adapter.Synchronization.CartoDB fix_the_geom_type > multipoint type'
+          
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_GeometryN(the_geom,1);")
           end
+          puts '>>>> after Adapter.Synchronization.CartoDB fix_the_geom_type > multipoint type'
           type = 'point'
         end
 
         # if the geometry is LINESTRING or POLYGON we convert it to MULTILINESTRING or MULTIPOLYGON
         if %w(linestring polygon).include?(type)
+
+          puts '>>>> Adapter.Synchronization.CartoDB fix_the_geom_type > linestring or polygon type'
+
           user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_Multi(the_geom);")
 
@@ -250,6 +263,9 @@ module CartoDB
               LIMIT 1
             }].first[:geometrytype]
           end
+
+          puts '>>>> after Adapter.Synchronization.CartoDB fix_the_geom_type > multipoint type'
+
         end
 
         type
@@ -258,6 +274,8 @@ module CartoDB
       # From Table#import_cleanup, with column schema checks adapted to unregistered tables
       def import_cleanup(schema_name, table_name)
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
+
+        puts '>>>> Adapter.Synchronization.CartoDB import_cleanup'
 
         user.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
 
@@ -326,6 +344,9 @@ module CartoDB
           end
 
         end
+
+        puts '>>>> after Adapter.Synchronization.CartoDB import_cleanup'
+
       end
 
       def success?

@@ -260,6 +260,7 @@ class Table
       aux_cartodb_id_column = [:ogc_fid, :gid].find { |col| valid_cartodb_id_candidate?(col) }
 
       # Remove primary key
+      puts '======== Carto.Table - import_cleanup1 ========'
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |user_database|
         existing_pk = user_database[%Q{
           SELECT c.conname AS pk_name
@@ -275,7 +276,10 @@ class Table
         }) unless existing_pk.nil?
       end
 
+      puts '======== Carto.Table - after import_cleanup1 ========'
+
       # All normal fields casted to text
+      puts '======== Carto.Table - import_cleanup2 ========'
       self.schema(reload: true, cartodb_types: false).each do |column|
         if column[1] =~ /^character varying/
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
@@ -283,18 +287,22 @@ class Table
           end
         end
       end
+      puts '======== Carto.Table - after import_cleanup2 ========'
 
       # If there's an auxiliary column, copy to cartodb_id and restart the sequence to the max(cartodb_id)+1
       if aux_cartodb_id_column.present?
         begin
+          puts '======== Carto.Table - import_cleanup3 ========'
           already_had_cartodb_id = false
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run(%{ALTER TABLE #{qualified_table_name} ADD COLUMN cartodb_id SERIAL})
           end
+          puts '======== Carto.Table - after import_cleanup3 ========'
         rescue StandardError
           already_had_cartodb_id = true
         end
         unless already_had_cartodb_id
+          puts '======== Carto.Table - import_cleanup4 ========'
           owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
             user_database.run(%{
               UPDATE #{qualified_table_name}
@@ -311,10 +319,13 @@ class Table
               user_database.run("ALTER SEQUENCE #{cartodb_id_sequence_name} RESTART WITH #{max_cartodb_id + 1}")
             end
           end
+          puts '======== Carto.Table - after import_cleanup4 ========'
         end
+        puts '======== Carto.Table - import_cleanup5 ========'
         owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
           user_database.run(%{ALTER TABLE #{qualified_table_name} DROP COLUMN #{aux_cartodb_id_column}})
         end
+        puts '======== Carto.Table - after import_cleanup5 ========'
       end
   end
 
@@ -419,11 +430,13 @@ class Table
   end
 
   def optimize
+    puts '======== Carto.Table - optimize ========'
     owner.db_service.in_database_direct_connection({statement_timeout: STATEMENT_TIMEOUT}) do |user_direct_conn|
       user_direct_conn.run(%Q{
         VACUUM ANALYZE #{qualified_table_name}
         })
     end
+    puts '======== Carto.Table - after optimize ========'
   rescue StandardError => e
     CartoDB::notify_exception(e, { user: owner })
     false
@@ -863,10 +876,11 @@ class Table
   def georeference_from!(options = {})
     if !options[:latitude_column].blank? && !options[:longitude_column].blank?
       set_the_geom_column!('point')
-
+      puts '======== Carto.Table - georeference_from ========'
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
         CartoDB::InternalGeocoder::LatitudeLongitude.new(user_conn).geocode(owner.database_schema, self.name, options[:latitude_column], options[:longitude_column])
       end
+      puts '======== Carto.Table - after georeference_from ========'
       schema(reload: true)
     else
       raise InvalidArgument
@@ -950,11 +964,13 @@ class Table
     table_name = "#{owner.database_schema}.#{self.name}"
 
     importer_stats.timing('cartodbfy') do
+      puts '======== Carto.Table - cartodbfy ========'
       owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT) do |user_conn|
         user_conn.run(%Q{
           SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{table_name}'::REGCLASS);
         })
       end
+      puts '======== Carto.Table - after cartodbfy ========'
     end
 
     elapsed = Time.now - start
@@ -962,6 +978,7 @@ class Table
       CartoDB::Importer2::CartodbfyTime::instance(@data_import.id).add(elapsed)
     end
   rescue StandardError => exception
+    puts exception.inspect
     if !!(exception.message =~ /Error: invalid cartodb_id/)
       raise CartoDB::CartoDBfyInvalidID
     else
@@ -1224,9 +1241,11 @@ class Table
 
   def valid_cartodb_id_candidate?(col_name)
     return false unless column_names.include?(col_name)
+    puts '======== Carto.Table - valid_cartodb_id_candidate ========'
     owner.transaction_with_timeout(statement_timeout: STATEMENT_TIMEOUT, as: :superuser) do |db|
       return db["SELECT 1 FROM #{qualified_table_name} WHERE #{col_name} IS NULL LIMIT 1"].first.nil?
     end
+    puts '======== Carto.Table - after valid_cartodb_id_candidate ========'
   end
 
   def column_names
@@ -1387,6 +1406,7 @@ class Table
     return if type.nil?
 
     # if the geometry is MULTIPOINT we convert it to POINT
+    puts '======== Carto.Table - set_the_geom_column ========'
     if type.to_s.downcase == 'multipoint'
       owner.db_service.in_database_direct_connection(statement_timeout: STATEMENT_TIMEOUT) do |user_database|
         user_database.run("UPDATE #{qualified_table_name} SET the_geom = ST_GeometryN(the_geom,1);")
@@ -1401,6 +1421,8 @@ class Table
         type = user_database["select GeometryType(#{THE_GEOM}) FROM #{qualified_table_name} where #{THE_GEOM} is not null limit 1"].first[:geometrytype]
       end
     end
+
+    puts '======== Carto.Table - after set_the_geom_column ========'
 
     raise "Error: unsupported geometry type #{type.to_s.downcase} in CARTO" unless VALID_GEOMETRY_TYPES.include?(type.to_s.downcase)
 

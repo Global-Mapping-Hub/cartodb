@@ -62,11 +62,15 @@ module Carto
         schema_name = @user.database_schema
         qualified_table_name = "\"#{schema_name}\".#{table_name}"
 
+        puts '>>>> TableSetup.Importer.Carto cartodbfy'
+
         @user.transaction_with_timeout(statement_timeout: @statement_timeout) do |user_conn|
           user_conn.run(%{
             SELECT cartodb.CDB_CartodbfyTable('#{schema_name}'::TEXT,'#{qualified_table_name}'::REGCLASS);
           })
         end
+
+        puts '>>>> after TableSetup.Importer.Carto cartodbfy'
 
         update_table_pg_stats(qualified_table_name)
       rescue StandardError => e
@@ -116,11 +120,13 @@ module Carto
       end
 
       def update_table_pg_stats(qualified_table_name)
+        puts '>>>> TableSetup.Importer.Carto update_table_pg_stats'
         @user.transaction_with_timeout(statement_timeout: @statement_timeout) do |user_conn|
           user_conn.run(%{
             ANALYZE #{qualified_table_name};
           })
         end
+        puts '>>>> after TableSetup.Importer.Carto update_table_pg_stats'
       end
 
       def update_cdb_tablemetadata(name)

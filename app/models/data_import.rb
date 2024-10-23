@@ -426,6 +426,7 @@ class DataImport < Sequel::Model
 
   def import_from_query(name, query)
     log.append('import_from_query()')
+    puts '>>>> [[import_from_query()]]'
 
     self.data_type    = TYPE_QUERY
     self.data_source  = query
@@ -435,20 +436,26 @@ class DataImport < Sequel::Model
 
     if taken_names.include?(name) && collision_strategy == Carto::DataImportConstants::COLLISION_STRATEGY_SKIP
       log.append("Table with name #{name} already exists. Skipping")
+      puts ">>>> Table with name #{name} already exists. Skipping"
       return
     end
 
     table_name = Carto::ValidTableNameProposer.new.propose_valid_table_name(name, taken_names: taken_names)
 
+    puts '>>>> table_name'
+    puts table_name.inspect
+
     if overwrite_strategy?
       overwrite_table_from_query(table_name, name, query)
       results.push CartoDB::Importer2::Result.new(success: true, error: nil)
     else
+      puts '>>>> else of the overwrite_strategy'
       current_user.db_service.in_database_direct_connection(
         statement_timeout: DIRECT_STATEMENT_TIMEOUT
       ) do |user_direct_conn|
         user_direct_conn.run(%{CREATE TABLE #{table_name} AS #{query}})
       end
+      puts '>>>> after else of the overwrite_strategy'
     end
     if current_user.over_disk_quota?
       log.append("Over storage quota. Dropping table #{table_name}")
