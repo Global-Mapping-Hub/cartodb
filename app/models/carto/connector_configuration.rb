@@ -52,6 +52,9 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
   end
 
   def self.for_user(user, provider)
+    puts '============== self.for_user =============='
+    puts user.inspect
+    puts provider.inspect
     if provider
       config = where(user_id: user.id, connector_provider_id: provider.id).first
       if config.blank? && user.organization_id.present?
@@ -60,6 +63,10 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
       if config.blank?
         config = default(provider)
       end
+
+      puts '============== self.for_user > config (if provider) =============='
+      puts config.inspect
+
       config
     end
   end
