@@ -34,7 +34,7 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
       # Create in memory record using app_config defaults
       config = new(
         connector_provider: provider,
-        enabled:  Cartodb.get_config(:connectors, provider.name, 'enabled') || true,
+        enabled:  Cartodb.get_config(:connectors, provider.name, 'enabled') || false,
         max_rows: Cartodb.get_config(:connectors, provider.name, 'max_rows')
       )
     end
