@@ -83,7 +83,6 @@ DESC
       user.password_confirmation = ENV['PASSWORD']
       user.username = ENV['SUBDOMAIN']
       user.database_host = ENV['DATABASE_HOST'] || ::SequelRails.configuration.environment_for(Rails.env)['host']
-
       user.builder_enabled = true
 
 
@@ -127,6 +126,9 @@ DESC
       puts "User: #{user.username} snowflake connector enabled: true"
       user.update(:sqlserver_enabled => true)
       puts "User: #{user.username} sqlserver connector enabled: true"
+
+      user.update(:max_layers => 50)
+      puts "User: #{user.username} max_layers updated to: 50"
 
       user.update(:account_type => 'enterprise')
       puts "User: #{user.username} table account type updated to: enterprise"
