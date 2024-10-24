@@ -2,7 +2,7 @@ namespace :cartodb do
   namespace :features do
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "enable feature for all users"
     task :enable_feature_for_all_users, [:feature] => :environment do |t, args|
 
@@ -18,7 +18,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "enable feature for a given user"
     task :enable_feature_for_user, [:feature, :username] => :environment do |t, args|
 
@@ -37,7 +37,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "enable feature for a given organization"
     task :enable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
 
@@ -56,7 +56,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "disable feature for all users"
     task :disable_feature_for_all_users, [:feature] => :environment do |t, args|
 
@@ -72,7 +72,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "disable feature for a given user"
     task :disable_feature_for_user, [:feature, :username] => :environment do |t, args|
 
@@ -91,7 +91,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "disable feature for a given organization"
     task :disable_feature_for_organization, [:feature, :org_name] => :environment do |t, args|
 
@@ -124,7 +124,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "add feature flag and optionally set restricted (default is true)"
     task :add_feature_flag, [:feature, :restricted] => :environment do |_task, args|
       restricted = args[:restricted] ? args[:restricted].casecmp('false') != 0 : true
@@ -142,7 +142,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "change feature flag to restricted or unrestricted"
     task :change_feature_restricted, [:feature, :restricted] => :environment do |_task, args|
       restricted = args[:restricted] ? args[:restricted].casecmp('false') != 0 : true
@@ -159,7 +159,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "remove feature flag"
     task :remove_feature_flag, [:feature] => :environment do |t, args|
 
@@ -177,7 +177,7 @@ namespace :cartodb do
     end
 
     # WARNING: For use only at development, opensource and custom installs.
-    # Refer to https://github.com/CartoDB/cartodb-management/wiki/Feature-Flags
+    # Refer to https://github.com/CartoDB/cartodb/wiki/Feature-Flags
     desc "list all features"
     task :list_all_features => :environment do
 
