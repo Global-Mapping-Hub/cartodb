@@ -66,7 +66,7 @@ class UserMetadataExportFactory
         last_password_change_date: nil,
         max_import_file_size: 157286400,
         max_import_table_row_count: 500000,
-        max_concurrent_import_count: 3,
+        max_concurrent_import_count: 5,
         last_common_data_update_date: nil,
         google_maps_key: nil,
         google_maps_private_key: nil,
