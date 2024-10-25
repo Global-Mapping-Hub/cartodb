@@ -118,9 +118,6 @@ module Carto
     end
 
     def self.limits(provider_name:, user:)
-      puts '>>>>>>>>>>>>> self.limits >>>>>>>>>>>>>>>>'
-      puts user.inspect
-      puts provider_name.inspect
       if configuration = user.connector_configuration(provider_name)
         { enabled: configuration.enabled?, max_rows: configuration.max_rows }
       else
