@@ -3,6 +3,12 @@ namespace :cartodb do
 
     desc "Create Connector Providers for Provider Classes"
     task create_providers: :environment do
+      
+      puts '========================================================'
+      puts 'Create Connector Providers for Provider Classes'
+      puts '========================================================'
+      puts Carto::Connector.providers(all: true).inspect
+
       Carto::Connector.providers(all: true).keys.each do |provider_name|
         unless Carto::ConnectorProvider.where(name: provider_name).exists?
           puts "Creating ConnectorProvider #{provider_name}"
