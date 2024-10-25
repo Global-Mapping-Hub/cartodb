@@ -1,6 +1,6 @@
 module Carto
   class Connector
-    PROVIDERS = []
+    PROVIDERS = ['mysql', 'postgresql', 'sqlserver', 'bigquery']
 
     DEFAULT_PROVIDER = nil # No default provider
 
