@@ -28,7 +28,7 @@ describe Carto::Api::DataImportPresenter do
       original_url: '',
       service_name: '',
       rejected_layers: 'manolo,escobar',
-      runner_warnings: '{"max_tables_per_import":10}'
+      runner_warnings: '{"max_tables_per_import":100}'
     )
   end
 
@@ -91,7 +91,7 @@ describe Carto::Api::DataImportPresenter do
     it 'gets warnings' do
       CartoDB.expects(:notify_debug).never
       presenter = Carto::Api::DataImportPresenter.new(@data_import)
-      expected = { :rejected_layers => ["manolo", "escobar"], :user_max_layers => 4, "max_tables_per_import" => 10 }
+      expected = { :rejected_layers => ["manolo", "escobar"], :user_max_layers => 4, "max_tables_per_import" => 100 }
       presenter.api_public_values[:warnings].should eq expected
     end
 
