@@ -169,8 +169,6 @@ module Carto
     #
     def self.providers(user: nil, all: false)
       providers_info = {}
-      puts '=========== connector.rb > self.providers ==========='
-      puts provider_ids.inspect
       provider_ids.each do |id|
         next unless all || provider_public?(id)
         # TODO: load description template for provider id
