@@ -25,7 +25,7 @@ module Carto
       'OEM engine - Cloud - Annual',
       'ORGANIZATION USER'
     ].freeze
-    ENTERPRISE_PLANS_DOWNCASED = Set.new ENTERPRISE_PLANS.map(&:downcase)
+    ENTERPRISE_PLANS_DOWNCASED = Set.new ENTERPRISE_PLANS.map(&:downcase).freeze
 
     belongs_to :rate_limit, dependent: :destroy
 
