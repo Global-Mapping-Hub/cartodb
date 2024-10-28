@@ -130,8 +130,8 @@ DESC
       user.update(:max_layers => 50)
       puts "User: #{user.username} max_layers updated to: 50"
 
-      user.update(:account_type => 'ENTERPRISE')
-      puts "User: #{user.username} table account type updated to: 'ENTERPRISE'"
+      user.update(:account_type => 'enterprise')
+      puts "User: #{user.username} table account type updated to: 'enterprise'"
 
       user.update(:sync_tables_enabled => true)
       puts "User: #{user.username} sync tables enabled"
