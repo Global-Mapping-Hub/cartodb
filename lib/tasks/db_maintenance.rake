@@ -865,15 +865,8 @@ namespace :cartodb do
         if ENV['BUILDER_ENABLED'] == "true"
           organization.builder_enabled = true
         end
-        puts '>>>> before organization.save'
         organization.save
-        puts '>>>> after organization.save'
-        puts organization.inspect
       end
-
-      puts 'puts organization.inspect before UO'
-      puts organization.inspect
-
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
       uo.promote_user_to_admin
     end
