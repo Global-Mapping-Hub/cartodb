@@ -17,6 +17,11 @@ CartoDB::Application.configure do
   # For nginx:
   config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
 
+  # Logging everything to stdout
+  config.logger = Carto::Common::Logger.new($stdout)
+  config.logger.level = Logger::DEBUG
+  config.log_level = :debug
+
   # If you have no front-end server that supports something like X-Sendfile,
   # just comment this out and Rails will serve the files
 
