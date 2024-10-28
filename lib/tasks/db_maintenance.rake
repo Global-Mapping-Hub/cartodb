@@ -865,14 +865,23 @@ namespace :cartodb do
         if ENV['BUILDER_ENABLED'] == "true"
           organization.builder_enabled = true
         end
-        puts '>>>>>>>>>>>>>>>> BEFORE ORG SAVE >>>>>>>>>>>>>>>>'
-        puts organization.inspect
-        organization.save
-        puts '>>>>>>>>>>>>>>>> AFTER ORG SAVE >>>>>>>>>>>>>>>>'
-        puts organization.inspect
-        puts '>>>>>>>>>>>>>>>> AFTER AFTER ORG SAVE >>>>>>>>>>>>>>>>'
-        organization.reload
-        puts organization.inspect
+
+        begin
+          puts '>>>>>>>>>>>>>>>> BEFORE ORG SAVE >>>>>>>>>>>>>>>>'
+          puts organization.inspect
+          puts organization.valid?
+          organization.save
+          puts '>>>>>>>>>>>>>>>> AFTER ORG SAVE >>>>>>>>>>>>>>>>'
+          puts organization.inspect
+          puts '>>>>>>>>>>>>>>>> AFTER AFTER ORG SAVE >>>>>>>>>>>>>>>>'
+          organization.reload
+          puts organization.inspect
+        rescue StandardError => e
+          puts e.inspect
+        end
+
+        organization.save!
+
       end
       puts '>>>>>>>>>>>>>>>> BEFORE UserOrganization >>>>>>>>>>>>>>>>'
       puts organization.inspect
