@@ -52,6 +52,6 @@ module Carto::Billing
   end
 
   def enterprise?
-    Carto::AccountType::ENTERPRISE_PLANS.include?(account_type)
+    Carto::AccountType::ENTERPRISE_PLANS_DOWNCASED.include?( account_type.downcase )
   end
 end
