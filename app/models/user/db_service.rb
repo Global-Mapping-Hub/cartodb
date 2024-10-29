@@ -571,12 +571,14 @@ module CartoDB
         timeout = config.fetch('timeout', 10)
 
         if host.present? && port.present? && username.present? && password.present?
-          conf_sql = %{
+
+          conf_sql = <<-SQL
             SELECT cartodb.CDB_Conf_SetConf('groups_api',
-              '{ \"host\": \"#{host}\", \"port\": #{port}, \"timeout\": #{timeout}, \"username\": \"#{username}\",
-                 \"password\": \"#{password}\"}'::json
+              '{ "host": "#{host}", "port": #{port}, "timeout": #{timeout}, "username": "#{username}",
+                "password": "#{password}" }'::json
             )
-          }
+          SQL
+
           @user.in_database(as: :superuser) do |database|
             database.fetch(conf_sql).first
           end
