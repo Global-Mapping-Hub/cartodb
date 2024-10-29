@@ -870,21 +870,13 @@ namespace :cartodb do
           puts '>>>>>>>>>>>>>>>> BEFORE ORG SAVE >>>>>>>>>>>>>>>>'
           puts organization.inspect
           puts organization.valid?
+          puts organization.errors.inspect
           organization.save
-          puts '>>>>>>>>>>>>>>>> AFTER ORG SAVE >>>>>>>>>>>>>>>>'
-          puts organization.inspect
-          puts '>>>>>>>>>>>>>>>> AFTER AFTER ORG SAVE >>>>>>>>>>>>>>>>'
-          organization.reload
-          puts organization.inspect
         rescue StandardError => e
           puts e.inspect
         end
 
-        organization.save!
-
       end
-      puts '>>>>>>>>>>>>>>>> BEFORE UserOrganization >>>>>>>>>>>>>>>>'
-      puts organization.inspect
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
       uo.promote_user_to_admin
     end
