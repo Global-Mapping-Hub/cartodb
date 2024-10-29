@@ -3,12 +3,12 @@ module CartoDB
 
     def initialize(org_id, owner_id)
       @owner = ::User.where(:id => owner_id).first
-      raise "The organization needs a owner" if @owner.nil?
+      raise "User wasn't found" if @owner.nil?
       if !@owner.organization_id.nil? && @owner.organization_id != org_id
-        raise "The user already has a organization and it's not #{org_id}"
+        raise "User already has an organization and it's not #{org_id}"
       end
       @organization = Carto::Organization.find_by(id: org_id)
-      raise "The user needs a organization" if @organization.nil?
+      raise "Organization wasn't found" if @organization.nil?
       if !@organization.owner_id.nil? && @organization.owner_id != owner_id
         raise "The organization already has a owner and it's not #{owner_id}"
       end
