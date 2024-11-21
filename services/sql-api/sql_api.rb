@@ -40,7 +40,7 @@ module CartoDB
     end
 
     def url(query, format = '', filename = '')
-      build_request(query, format, filename, :get, :public).url
+      build_request(query, format, filename, :post, :public).url
     end
 
     def export_table_url(table, format = 'gpkg', filename = table)
