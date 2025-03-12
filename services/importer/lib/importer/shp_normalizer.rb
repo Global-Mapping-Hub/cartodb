@@ -116,6 +116,12 @@ module CartoDB
           destination:  output[3]
         }
 
+        job.log "================================================="
+        job.log "#{stdout}"
+        job.log "#{stderr}"
+        job.log "#{status}"
+        job.log "================================================="
+
         raise ShpNormalizationError unless status.to_i == 0
         raise ShpNormalizationError unless !!normalizer_output
         self
