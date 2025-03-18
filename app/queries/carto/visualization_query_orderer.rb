@@ -45,7 +45,11 @@ class Carto::VisualizationQueryOrderer
     when 'dependent_visualizations'
       DEPENDENT_VISUALIZATIONS_ORDER_CLAUSE
     when *VISUALIZATION_TABLE_ORDERS
-      "visualizations.#{order}"
+      if order == 'updated_at'
+        "visualizations.#{order}::timestamp"
+      else
+        "visualizations.#{order}"
+      end
     else
       order
     end
