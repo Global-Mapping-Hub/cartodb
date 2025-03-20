@@ -93,7 +93,8 @@ module Carto
 
         visualizations = vqb.with_order(order, order_direction)
                             .build_paged(page, per_page).map do |v|
-          VisualizationPresenter.new(v, current_viewer, self, presenter_options).to_poro \
+          VisualizationPresenter.new(v, current_viewer, self, presenter_options)
+                                .with_presenter_cache(presenter_cache).to_poro \
             unless params[:subscribed] == 'true' and not v.subscription.present?
         end.compact
 
