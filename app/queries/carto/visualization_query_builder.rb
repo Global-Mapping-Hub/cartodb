@@ -242,11 +242,6 @@ class Carto::VisualizationQueryBuilder
     query = with_associations(query)
     query = order_query(query)
     query = query.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
-    puts '--------------- build_regular -----------------'
-    puts 'page: ', page
-    puts 'per_page: ', per_page
-    puts 'query: ', query.to_sql
-    puts '----------------------------------------------------'
     query
   end
 
@@ -254,12 +249,6 @@ class Carto::VisualizationQueryBuilder
     subquery = with_ordering_associations(filtered_query)
     subquery = order_query(subquery)
     subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
-
-    puts '--------------- build_subquery -----------------'
-    puts 'page: ', page
-    puts 'per_page: ', per_page
-    puts 'subquery: ', subquery.to_sql
-    puts '----------------------------------------------------'
 
     # Fetching related tables after filtering the results for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
