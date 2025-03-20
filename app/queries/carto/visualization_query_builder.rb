@@ -250,17 +250,9 @@ class Carto::VisualizationQueryBuilder
     subquery = order_query(subquery)
     subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
 
-    puts '--------------- build_subquery -----------------'
-    puts "Subquery: #{subquery.to_sql}"
-
     # Fetching related tables after filtering the results for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
-    result = with_associations(query)
-    
-    puts "Final result: #{result.to_sql}"
-    puts '--------------- build_subquery -----------------'
-    
-    result
+    with_associations(query)
   end
 
   def order_query(query)
