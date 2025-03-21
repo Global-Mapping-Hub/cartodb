@@ -262,7 +262,21 @@ class Carto::VisualizationQueryBuilder
     return query if @tainted_search_pattern
 
     orderer = Carto::VisualizationQueryOrderer.new(query)
-    orderer.order(@order, @direction)
+    
+    if @order.include?(',')
+      # Handle multiple order columns
+      orders = @order.split(',').map(&:strip)
+      directions = @direction.split(',').map(&:strip)
+      
+      # Zip orders and directions together, defaulting to 'asc' if no direction specified
+      orders.zip(directions).each do |order, direction|
+        direction = 'asc' if direction.nil?
+        query = orderer.order(order, direction)
+      end
+    else
+      # Handle single order column
+      orderer.order(@order, @direction)
+    end
   end
 
   def with_include_of(association)
@@ -279,9 +293,11 @@ class Carto::VisualizationQueryBuilder
     query = query.includes(@include_associations) unless @include_associations.empty?
     query = query.eager_load(@eager_load_associations) unless @eager_load_associations.empty?
     
-    # If we have an order column and a subquery table name, explicitly select it with its original name
+    # If we have order columns and a subquery table name, explicitly select them with their original names
     if @order && subquery_table_name
-      query = query.select("#{subquery_table_name}.*, #{subquery_table_name}.#{@order} as #{@order}")
+      order_columns = @order.split(',').map(&:strip)
+      select_columns = order_columns.map { |col| "#{subquery_table_name}.#{col} as #{col}" }
+      query = query.select("#{subquery_table_name}.*, #{select_columns.join(', ')}")
     end
     
     query
