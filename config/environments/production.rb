@@ -18,11 +18,6 @@ CartoDB::Application.configure do
   config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect'
 
   # Logging everything to stdout
-  config.logger = Carto::Common::Logger.new($stdout)
-  config.logger.level = Logger::DEBUG
-  config.log_level = :debug
-
-  # Logging everything to stdout
   #config.logger = Carto::Common::Logger.new($stdout)
   #config.logger.level = Logger::DEBUG
   #config.log_level = :debug
