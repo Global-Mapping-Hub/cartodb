@@ -273,6 +273,7 @@ class Carto::VisualizationQueryBuilder
         direction = 'asc' if direction.nil?
         query = orderer.order(order, direction)
       end
+      query
     else
       # Handle single order column
       orderer.order(@order, @direction)
