@@ -261,23 +261,24 @@ class Carto::VisualizationQueryBuilder
   def order_query(query)
     # Search has its own ordering criteria
     return query if @tainted_search_pattern
+    return query unless @order  # Return early if no order specified
 
     orderer = Carto::VisualizationQueryOrderer.new(query)
     
     if @order.include?(',')
       # Handle multiple order columns
       orders = @order.split(',').map(&:strip)
-      directions = @direction.split(',').map(&:strip)
+      directions = (@direction || '').split(',').map(&:strip)
       
       # Zip orders and directions together, defaulting to 'asc' if no direction specified
       orders.zip(directions).each do |order, direction|
-        direction = 'asc' if direction.nil?
+        direction = 'asc' if direction.nil? || direction.empty?
         query = orderer.order(order, direction)
       end
       query
     else
       # Handle single order column
-      orderer.order(@order, @direction)
+      orderer.order(@order, @direction || 'asc')
     end
   end
 
