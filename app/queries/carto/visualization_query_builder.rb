@@ -253,6 +253,7 @@ class Carto::VisualizationQueryBuilder
     # Fetching related tables after filtering the results for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
     query = with_associations(query, 'visualizations')
+    
     # Apply ordering after associations are loaded
     order_query(query)
   end
@@ -297,8 +298,11 @@ class Carto::VisualizationQueryBuilder
     # If we have order columns and a subquery table name, explicitly select them with their original names
     if @order && subquery_table_name
       order_columns = @order.split(',').map(&:strip)
-      select_columns = order_columns.map { |col| "#{subquery_table_name}.#{col} as #{col}" }
-      query = query.select("#{subquery_table_name}.*, #{select_columns.join(', ')}")
+      
+      # Only include columns that exist in the table
+      select_columns = order_columns.select { |col| Carto::Visualization.column_names.include?(col) }
+        .map { |col| "#{subquery_table_name}.#{col} as #{col}" }
+      query = query.select("#{subquery_table_name}.*, #{select_columns.join(', ')}") if select_columns.any?
     end
     
     query
