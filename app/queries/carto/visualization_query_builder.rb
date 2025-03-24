@@ -247,6 +247,7 @@ class Carto::VisualizationQueryBuilder
 
   def build_subquery(page = nil, per_page = nil)
     subquery = with_ordering_associations(filtered_query)
+    subquery = order_query(subquery)
     subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
 
     # Fetching related tables after filtering the results for better performance
