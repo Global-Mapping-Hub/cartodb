@@ -246,16 +246,24 @@ class Carto::VisualizationQueryBuilder
   end
 
   def build_subquery(page = nil, per_page = nil)
+    # First ordering: ensures correct pagination order
     subquery = with_ordering_associations(filtered_query)
     subquery = order_query(subquery)
+    
+    # Apply pagination to the ordered subquery
     subquery = subquery.offset((page.to_i - 1) * per_page.to_i).limit(per_page.to_i) if page && per_page
 
-    # Fetching related tables after filtering the results for better performance
+    # Fetch related tables after filtering for better performance
     query = Carto::Visualization.from(subquery, 'visualizations')
     query = with_associations(query, 'visualizations')
     
-    # Apply ordering after associations are loaded
-    order_query(query)
+    # Second ordering: ensures the final result maintains the same order after loading associations
+    # Only reorder if we have order columns that might be affected by the associations
+    if @order && @order.split(',').any? { |col| Carto::Visualization.column_names.include?(col) }
+      order_query(query)
+    else
+      query
+    end
   end
 
   def order_query(query)
