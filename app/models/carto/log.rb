@@ -3,7 +3,7 @@ module Carto
 
     include ::LoggerHelper
 
-    has_one :data_import, class_name: Carto::DataImport, foreign_key: :logger
+    has_one :data_import, class_name: 'Carto::DataImport', foreign_key: :logger
 
     after_initialize :after_initialize_callback
 

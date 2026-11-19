@@ -42,9 +42,6 @@ module CartoDB
     # JavaScript files you want as :defaults (application.js is always included).
     # config.action_view.javascript_expansions[:defaults] = %w(jquery rails)
 
-    # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
-
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     # Filter out connector connection credentials. We'd rather filter just 'connector.connection',
@@ -54,8 +51,17 @@ module CartoDB
     ::Sequel.extension(:pagination)
     ::Sequel.extension(:connection_validator)
 
-    # Enable the asset pipeline
-    config.assets.enabled = false
+    # Asset files are built outside Sprockets. Keep the pipeline from serving them
+    # when this Rails version still exposes the switch.
+    config.assets.enabled = false if config.assets.respond_to?(:enabled=)
+
+    config.active_record.belongs_to_required_by_default = false
+    if config.active_record.respond_to?(:default_column_serializer=)
+      config.active_record.default_column_serializer = YAML
+    end
+    if config.action_controller.respond_to?(:action_on_open_redirect=)
+      config.action_controller.action_on_open_redirect = :log
+    end
 
     FileUtils.mkdir_p(log_dir_path) unless File.directory?(log_dir_path)
 
@@ -216,8 +222,6 @@ module CartoDB
 
     # Sequel stores dates in the databse in the local timezone, AR should do the same
     config.active_record.default_timezone = :local
-
-    config.active_record.raise_in_transactional_callbacks = true
 
     # Put sequel db tasks into its own namespace
     config.sequel.load_database_tasks = :sequel

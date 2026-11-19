@@ -1,9 +1,9 @@
 require 'carto/connector'
 
 class Carto::ConnectorConfiguration < ActiveRecord::Base
-  belongs_to :connector_provider, class_name: Carto::ConnectorProvider
-  belongs_to :user, class_name: Carto::User, inverse_of: :connector_configurations
-  belongs_to :organization, class_name: Carto::Organization, inverse_of: :connector_configurations
+  belongs_to :connector_provider, class_name: 'Carto::ConnectorProvider'
+  belongs_to :user, class_name: 'Carto::User', inverse_of: :connector_configurations
+  belongs_to :organization, class_name: 'Carto::Organization', inverse_of: :connector_configurations
 
   # A ConnectorConfiguration can belong to either user or an organization, but not both;
   # it may also be a default configuration (no user or organization).
@@ -13,8 +13,8 @@ class Carto::ConnectorConfiguration < ActiveRecord::Base
   # * organization configuration: user.nil? && organization.present?
   # * user configuration: organization.nil? && user.present?
   validates :connector_provider_id, presence: true
-  validates :user_id, uniqueness: { scope: [:connector_provider_id, :organization_id] }, if: 'organization_id.nil?'
-  validates :organization_id, uniqueness: { scope: [:connector_provider_id, :user_id] }, if: 'user_id.nil?'
+  validates :user_id, uniqueness: { scope: [:connector_provider_id, :organization_id] }, if: -> { organization_id.nil? }
+  validates :organization_id, uniqueness: { scope: [:connector_provider_id, :user_id] }, if: -> { user_id.nil? }
   validate :not_user_and_organization_simultaneously
 
   def not_user_and_organization_simultaneously

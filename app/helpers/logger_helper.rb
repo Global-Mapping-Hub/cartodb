@@ -4,29 +4,36 @@ module LoggerHelper
 
   extend ActiveSupport::Concern
 
-  def log_debug(params = {})
-    rails_log(:debug, params)
+  def log_debug(params = {}, **kwargs)
+    rails_log(:debug, log_params(params, kwargs))
   end
 
-  def log_info(params = {})
-    rails_log(:info, params)
+  def log_info(params = {}, **kwargs)
+    rails_log(:info, log_params(params, kwargs))
   end
 
-  def log_warning(params = {})
-    rails_log(:warn, params)
+  def log_warning(params = {}, **kwargs)
+    rails_log(:warn, log_params(params, kwargs))
   end
 
-  def log_error(params = {})
-    rails_log(:error, params)
-    send_exception_to_rollbar(params)
+  def log_error(params = {}, **kwargs)
+    merged = log_params(params, kwargs)
+    rails_log(:error, merged)
+    send_exception_to_rollbar(merged)
   end
 
-  def log_fatal(params = {})
-    rails_log(:fatal, params)
-    send_exception_to_rollbar(params)
+  def log_fatal(params = {}, **kwargs)
+    merged = log_params(params, kwargs)
+    rails_log(:fatal, merged)
+    send_exception_to_rollbar(merged)
   end
 
   private
+
+  def log_params(params, kwargs)
+    hash = params.respond_to?(:to_h) ? params.to_h : {}
+    hash.merge(kwargs)
+  end
 
   def rails_log(level, params)
     parsed_params = {}.with_indifferent_access

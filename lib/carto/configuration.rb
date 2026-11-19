@@ -3,14 +3,14 @@ module Carto
     def db_config
       @@db_config ||= begin
         template = ERB.new File.new(db_config_file).read
-        YAML.load(template.result(binding)).freeze
+        load_local_yaml(template.result(binding)).freeze
       end
     end
 
     def app_config
       @@app_config ||= begin
         template = ERB.new File.new(app_config_file).read
-        YAML.load(template.result(binding)).freeze
+        load_local_yaml(template.result(binding)).freeze
       end
     end
 
@@ -109,6 +109,15 @@ module Carto
       else
         alternative = yield
         alternative || ''
+      end
+    end
+
+    # Trusted local config. Ruby 4's YAML.load is safe_load and rejects anchors.
+    def load_local_yaml(contents)
+      if YAML.respond_to?(:unsafe_load)
+        YAML.unsafe_load(contents)
+      else
+        YAML.load(contents)
       end
     end
 

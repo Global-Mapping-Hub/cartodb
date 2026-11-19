@@ -4,5 +4,7 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-CartoDB::Application.config.secret_token = Cartodb.config[:secret_token]
+if CartoDB::Application.config.respond_to?(:secret_token=)
+  CartoDB::Application.config.secret_token = Cartodb.config[:secret_token]
+end
 CartoDB::Application.config.secret_key_base = Cartodb.config[:secret_key_base]

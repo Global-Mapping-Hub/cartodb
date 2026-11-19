@@ -1,6 +1,8 @@
-require_relative '../../services/data-repository/backend/sequel'
-require_relative '../../app/models/visualization/collection'
-require_relative '../../app/models/synchronization/collection'
+Rails.application.config.after_initialize do
+  require_relative '../../services/data-repository/backend/sequel'
+  require_relative '../../app/models/visualization/collection'
+  require_relative '../../app/models/synchronization/collection'
 
-CartoDB::Visualization.repository   ||= DataRepository::Backend::Sequel.new(SequelRails.connection, :visualizations)
-CartoDB::Synchronization.repository ||= DataRepository::Backend::Sequel.new(SequelRails.connection, :synchronizations)
+  CartoDB::Visualization.repository   ||= DataRepository::Backend::Sequel.new(SequelRails.connection, :visualizations)
+  CartoDB::Synchronization.repository ||= DataRepository::Backend::Sequel.new(SequelRails.connection, :synchronizations)
+end

@@ -326,7 +326,9 @@ Warden::Strategies.add(:user_creation) do
   end
 end
 
-module Carto::Api::AuthApiAuthentication
+module Carto
+  module Api
+    module AuthApiAuthentication
   include CartoStrategy
   # We don't want to store a session and send a response cookie
   def store?
@@ -391,6 +393,8 @@ module Carto::Api::AuthApiAuthentication
   def split_auth
     decoded_auth = Base64.decode64(base64_auth)
     decoded_auth.split(':')
+  end
+    end
   end
 end
 

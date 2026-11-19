@@ -1,7 +1,7 @@
 production:
   adapter: postgresql
   encoding: unicode
-  host: localhost
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
   port: 5432
   direct_port: 5432
   database: carto_db_production
@@ -14,7 +14,7 @@ production:
 staging:
   adapter: postgresql
   encoding: unicode
-  host: localhost
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
   port: 5432
   direct_port: 5432
   database: carto_db_staging
@@ -27,7 +27,7 @@ staging:
 development:
   adapter: postgresql
   encoding: unicode
-  host: localhost
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
   port: 5432
   direct_port: 5432
   database: carto_db_development
@@ -42,7 +42,7 @@ test:
   adapter: postgresql
   encoding: unicode
   database: carto_db_test
-  host: localhost
+  host: <%= ENV.fetch('PGHOST', 'localhost') %>
   port: 5432
   direct_port: 5432
   username: postgres

@@ -15,7 +15,7 @@ module Carto
     validates :users_emails, email: true
     validate :users_emails_not_taken
 
-    belongs_to :inviter_user, class_name: Carto::User
+    belongs_to :inviter_user, class_name: 'Carto::User'
     belongs_to :organization
 
     private_class_method :new

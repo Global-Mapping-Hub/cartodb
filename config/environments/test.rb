@@ -1,7 +1,10 @@
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
+  config.eager_load = false
+  config.hosts.clear if config.respond_to?(:hosts)
+  spec_dir = Rails.root.join('spec').to_s
+  $LOAD_PATH.unshift(spec_dir) unless $LOAD_PATH.include?(spec_dir)
 
   # The test environment is used exclusively to run your application's
   # test suite.  You never need to work with it otherwise.  Remember that
@@ -9,15 +12,12 @@ CartoDB::Application.configure do
   # and recreated between test runs.  Don't rely on the data there!
   config.cache_classes = true
 
-  # Log error messages when you accidentally call methods on nil.
-  config.whiny_nils = true
-
   # Show full error reports and disable caching
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
   # Raise exceptions instead of rendering exception templates
-  config.action_dispatch.show_exceptions = false
+  config.action_dispatch.show_exceptions = :none
 
   # Disable request forgery protection in test environment
   config.action_controller.allow_forgery_protection = false
@@ -52,12 +52,9 @@ CartoDB::Application.configure do
   config.ssl_required = false
 
   # Configure static asset server for tests with Cache-Control for performance
-  config.serve_static_files = true
-  config.static_cache_control = "public, max-age=3600"
+  config.public_file_server.enabled = true
+  config.public_file_server.headers = { 'Cache-Control' => 'public, max-age=3600' }
 
   # Allow pass debug_assets=true as a query parameter to load pages with unpackaged assets
   config.assets.allow_debugging = false
-
-  # Disables database calls in precompile
-  config.assets.initialize_on_precompile = false
 end

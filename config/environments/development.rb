@@ -3,12 +3,12 @@ require 'carto/configuration'
 CartoDB::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  ActiveSupport::Dependencies.autoload_paths << File::join(Rails.root, 'lib')
-  # ActiveSupport::Dependencies.autoload_paths << File::join( Rails.root, 'lib/central')
+  config.eager_load = false
 
   # The production environment is meant for finished, "live" apps.
   # Code is not reloaded between requests
   config.cache_classes = false
+  config.hosts.clear if config.respond_to?(:hosts)
 
   # Full error reports are disabled and caching is turned on
   config.consider_all_requests_local       = true
@@ -30,7 +30,7 @@ CartoDB::Application.configure do
 
   # Disable Rails's static asset server
   # In production, Apache or nginx will already do this
-  config.serve_static_files = true
+  config.public_file_server.enabled = true
 
   # Setting this to true will enable ActiveController's enforcement of SSL.
   config.ssl_required = false
@@ -70,8 +70,6 @@ CartoDB::Application.configure do
 
   # Serve gzipped files
   config.middleware.insert_before ActionDispatch::Static, Rack::Deflater
-
-  config.assets.initialize_on_precompile = true
 
   config.action_controller.asset_host = Proc.new do
     Cartodb.asset_path

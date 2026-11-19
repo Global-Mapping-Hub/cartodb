@@ -33,7 +33,7 @@ CartoDB::Application.configure do
 
   # Disable Rails's static asset server
   # In production, Apache or nginx should already do this, however there might be some docker related exceptions
-  config.serve_static_files = true
+  config.public_file_server.enabled = true
 
   # Enable serving of images, stylesheets, and javascripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
@@ -62,8 +62,6 @@ CartoDB::Application.configure do
 
   # Generate digests for assets URLs
   config.assets.digest = true
-
-  config.assets.initialize_on_precompile = true
 
   config.action_controller.asset_host = Proc.new do
     Cartodb.asset_path

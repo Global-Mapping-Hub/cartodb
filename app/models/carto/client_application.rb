@@ -8,9 +8,9 @@ module Carto
 
     extend CartoDB::ConfigUtils
 
-    belongs_to :user, class_name: Carto::User
-    has_many :oauth_tokens, class_name: Carto::OauthToken, dependent: :destroy
-    has_many :access_tokens, -> { where(type: 'AccessToken') }, class_name: Carto::OauthToken, dependent: :destroy
+    belongs_to :user, class_name: 'Carto::User'
+    has_many :oauth_tokens, class_name: 'Carto::OauthToken', dependent: :destroy
+    has_many :access_tokens, -> { where(type: 'AccessToken') }, class_name: 'Carto::OauthToken', dependent: :destroy
 
     before_create :initialize_entity
 

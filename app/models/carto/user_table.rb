@@ -29,7 +29,7 @@ module Carto
 
     # AR sets privacy = 0 (private) by default, taken from the DB. We want it to be `nil`
     # so the `before_validation` hook sets an appropriate privacy based on the table owner
-    attribute 'privacy', Type::Integer.new, default: nil
+    attribute 'privacy', ActiveRecord::Type::Integer.new, default: nil
 
     # The ::Table service depends on the constructor not being able to set all parameters, only these are allowed
     # This is done so things like name changes are forced to go through ::Table.name= to ensure renaming behaviour

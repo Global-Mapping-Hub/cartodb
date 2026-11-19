@@ -4,9 +4,9 @@ require_dependency 'carto/assets/html_assets_service'
 
 module Carto
   class Asset < ActiveRecord::Base
-    belongs_to :user, class_name: Carto::User
-    belongs_to :organization, class_name: Carto::Organization
-    belongs_to :visualization, class_name: Carto::Visualization
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :organization, class_name: 'Carto::Organization'
+    belongs_to :visualization, class_name: 'Carto::Visualization'
 
     serialize :storage_info, CartoJsonSymbolizerSerializer
     validates :storage_info, carto_json_symbolizer: true

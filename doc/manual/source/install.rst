@@ -260,25 +260,22 @@ Ruby
 ----
 
 .. note::
-  CARTO requires exactly Ruby 2.4.x. Older or newer versions won't work.
-
-* Add brightbox ruby repositories
-
-  .. code-block:: bash
-
-    sudo apt-add-repository ppa:brightbox/ruby-ng && sudo apt-get update
-
-* Install ruby 2.4
+  CARTO runs on Ruby 4.0.10 (3.4.13 is the oldest interpreter this tree still targets).
+  Do not install Ruby on the host when you are on Windows. Build and test inside Docker:
 
   .. code-block:: bash
 
-    sudo apt-get install ruby2.4 ruby2.4-dev
+    docker compose build
+    docker compose run --rm app ruby -v
+    docker compose run --rm app bundle exec rails runner "puts %(RUBY #{RUBY_VERSION} RAILS #{Rails::VERSION::STRING})"
 
-* Install bundler. Bundler is an app used to manage ruby dependencies. It is needed by CARTO Builder
+  The image is ``ruby:4.0.10-bookworm``. ``docker/entrypoint.sh`` installs gems and, on first
+  boot, copies ``config/database.yml`` and ``config/app_config.yml`` from the samples.
+  Postgres and Redis come from ``docker-compose.yml``. Point the app at them with
+  ``PGHOST``, ``REDIS_HOST`` and ``REDIS_PORT`` (already set on the ``app`` service).
 
-  .. code-block:: bash
-
-    sudo apt-get install ruby-bundler
+  A native Linux install can use the same Ruby, for example with ruby-install, rbenv or the
+  official packages, then ``bundle install`` in this directory. Ruby 2.4 is no longer supported.
 
 
 * Install compass. It will be needed later on by CARTO's Builder

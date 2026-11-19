@@ -13,6 +13,7 @@ class RedisFactory
     redis_conf.merge!(secondary_conf) if secondary
     redis_conf.slice!(:host, :port, :driver, :tcp_keepalive, :timeout, :connect_timeout, :read_timeout, :write_timeout)
 
+    redis_conf[:host] = ENV['REDIS_HOST'] if ENV['REDIS_HOST']
     redis_conf[:port] = ENV['REDIS_PORT'] if ENV['REDIS_PORT']
 
     if redis_conf[:tcp_keepalive] && redis_conf[:tcp_keepalive].is_a?(Hash)

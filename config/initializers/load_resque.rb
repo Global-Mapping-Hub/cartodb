@@ -5,8 +5,11 @@ require 'resque/failure/redis'
 require './lib/resque_failure_logger'
 require_dependency 'redis_factory'
 
-# Load automatically all resque files from lib/resque
-Dir[Rails.root.join("lib/resque/*.rb")].each {|f| require f}
+# Job files reference models. Zeitwerk is not set up until after user
+# initializers, so load them once autoload paths exist.
+Rails.application.config.after_initialize do
+  Dir[Rails.root.join('lib/resque/*.rb')].sort.each { |file| require file }
+end
 
 Resque.redis = RedisFactory.new_connection
 

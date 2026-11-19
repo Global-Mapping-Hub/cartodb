@@ -7,9 +7,9 @@ require_dependency 'carto/organization_metadata_export_service'
 
 module Carto
   class UserMigrationImport < ::ActiveRecord::Base
-    belongs_to :organization, class_name: Carto::Organization
-    belongs_to :user, class_name: Carto::User
-    belongs_to :log, class_name: Carto::Log
+    belongs_to :organization, class_name: 'Carto::Organization'
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :log, class_name: 'Carto::Log'
 
     STATE_PENDING = 'pending'.freeze
     STATE_DOWNLOADING = 'downloading'.freeze

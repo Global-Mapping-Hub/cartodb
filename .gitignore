@@ -38,7 +38,6 @@ coverage
 .sass-cache
 public/js/lib/cdb.js
 services/importer/spec/factories/database.json
-.ruby-version
 cartodb.sublime-workspace
 cartodb.sublime-project
 .rvmrc

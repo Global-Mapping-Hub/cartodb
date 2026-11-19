@@ -1,13 +1,11 @@
-require 'rubygems'
+require_relative 'boot_ruby_compat'
 
-# Set up gems listed in the Gemfile.
-gemfile = File.expand_path('../../Gemfile', __FILE__)
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __dir__)
+
 begin
-  ENV['BUNDLE_GEMFILE'] = gemfile
-  require 'bundler'
-  Bundler.setup
+  require 'bundler/setup'
 rescue Bundler::GemNotFound => e
-  STDERR.puts e.message
-  STDERR.puts "Try running `bundle install`."
-  exit!
-end if File.exist?(gemfile)
+  warn e.message
+  warn "Try running `bundle install`."
+  exit 1
+end

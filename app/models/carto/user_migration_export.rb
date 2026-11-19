@@ -7,9 +7,9 @@ require_dependency 'carto/ghost_tables_manager'
 
 module Carto
   class UserMigrationExport < ::ActiveRecord::Base
-    belongs_to :organization, class_name: Carto::Organization
-    belongs_to :user, class_name: Carto::User
-    belongs_to :log, class_name: Carto::Log
+    belongs_to :organization, class_name: 'Carto::Organization'
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :log, class_name: 'Carto::Log'
 
     STATE_PENDING = 'pending'.freeze
     STATE_EXPORTING = 'exporting'.freeze

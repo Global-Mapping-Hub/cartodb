@@ -10,7 +10,7 @@ class Carto::Widget < ActiveRecord::Base
   serialize :style, ::Carto::CartoJsonSymbolizerSerializer
   validates :style, carto_json_symbolizer: true
 
-  belongs_to :layer, class_name: Carto::Layer
+  belongs_to :layer, class_name: 'Carto::Layer'
 
   before_validation :set_style_if_nil
   validates :layer, :order, :type, :options, :source_id, presence: true

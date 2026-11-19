@@ -23,10 +23,10 @@ module Carto
     STATE_FAILURE   = 'failure'
     STATE_STUCK     = 'stuck'
 
-    belongs_to :user, class_name: Carto::User
-    belongs_to :log, class_name: Carto::Log, foreign_key: :logger
-    has_many :external_data_imports, inverse_of: :data_import, class_name: Carto::ExternalDataImport
-    has_many :user_tables, class_name: Carto::UserTable
+    belongs_to :user, class_name: 'Carto::User'
+    belongs_to :log, class_name: 'Carto::Log', foreign_key: :logger
+    has_many :external_data_imports, inverse_of: :data_import, class_name: 'Carto::ExternalDataImport'
+    has_many :user_tables, class_name: 'Carto::UserTable'
 
     validate :validate_collision_strategy
 
