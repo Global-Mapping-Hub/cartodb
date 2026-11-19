@@ -8,3 +8,10 @@
 #   inflect.irregular 'person', 'people'
 #   inflect.uncountable %w( fish sheep )
 # end
+
+# Zeitwerk camelizes each filename segment
+# These acronyms keep VizJSON class names aligned with files such as layer_vizjson_adapter.rb and vizjson3_presenter.rb
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.acronym 'VizJSON'
+  inflect.acronym 'VizJSON3'
+end
