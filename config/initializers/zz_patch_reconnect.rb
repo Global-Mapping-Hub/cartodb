@@ -48,20 +48,25 @@ module PostgreSQLAutoReconnectionPatch
   def with_auto_reconnect
     yield
   rescue ActiveRecord::StatementInvalid
-    raise unless @connection.status == PG::CONNECTION_BAD
+    raise unless connection_lost?
     raise unless open_transactions.zero?
 
     reconnect!
     yield
   rescue PG::Error => e
-    unless @connection.status == PG::CONNECTION_BAD
-      raise "Not valid connection status: #{@connection.status}. Error: #{e.message}"
+    unless connection_lost?
+      raise "Not valid connection status: #{@raw_connection&.status.inspect}. Error: #{e.message}"
     end
     raise unless open_transactions.zero?
     raise unless e.message =~ /result has been cleared/
 
     reconnect!
     yield
+  end
+
+  # Rails 8 keeps the PG handle in @raw_connection. @connection is no longer set on the adapter.
+  def connection_lost?
+    @raw_connection.respond_to?(:status) && @raw_connection.status == PG::CONNECTION_BAD
   end
 end
 
