@@ -70,7 +70,9 @@ class Api::Json::ImportsController < Api::ApplicationController
         end
 
         # override param to store as string
-        user_limits = ::JSON.dump(options[:user_defined_limits])
+        limits = options[:user_defined_limits]
+        limits = limits.to_unsafe_h if limits.respond_to?(:to_unsafe_h)
+        user_limits = ::JSON.generate(limits)
         data_import = @stats_aggregator.timing('save') do
           DataImport.create(options.merge!({ user_defined_limits: user_limits }))
         end

@@ -106,7 +106,7 @@ class DataImport < Sequel::Model
 
   def extra_options
     return {} if self.import_extra_options.nil?
-    ::JSON.parse(self.import_extra_options).symbolize_keys
+    parsed_json_hash(self.import_extra_options)
   end
 
   def extra_options=(value)
@@ -1001,6 +1001,25 @@ class DataImport < Sequel::Model
     decoration
   end
 
+  def parsed_user_defined_limits
+    parsed_json_hash(user_defined_limits)
+  end
+
+  def parsed_json_hash(value)
+    return {} if value.nil? || value == ''
+    return value.symbolize_keys if value.respond_to?(:symbolize_keys) && !value.is_a?(String)
+
+    if value.is_a?(String)
+      parsed = ::JSON.parse(value)
+      parsed = ::JSON.parse(parsed) if parsed.is_a?(String)
+      return parsed.symbolize_keys if parsed.respond_to?(:symbolize_keys)
+    end
+
+    {}
+  rescue ::JSON::ParserError, ::TypeError
+    {}
+  end
+
   def payload_for(result=nil)
     log.store
     payload = {
@@ -1037,7 +1056,7 @@ class DataImport < Sequel::Model
         datasource_name, current_user, {
                                           http_timeout: ::DataImport.http_timeout_for(current_user),
                                           redis_storage: $tables_metadata,
-                                          user_defined_limits: ::JSON.parse(user_defined_limits).symbolize_keys
+                                          user_defined_limits: parsed_user_defined_limits
                                        })
       datasource.token = oauth.token unless oauth.nil?
     rescue StandardError => ex
