@@ -445,7 +445,7 @@ class Carto::Visualization < ActiveRecord::Base
 
   def widgets
     # Preload widgets for all layers
-    ActiveRecord::Associations::Preloader.new.preload(layers, :widgets)
+    ActiveRecord::Associations::Preloader.new(records: layers.to_a, associations: :widgets).call
     layers.map(&:widgets).flatten
   end
 

@@ -7,7 +7,12 @@ module Carto
     end
 
     def self.load(value)
-      value.try(&:with_indifferent_access)
+      return value unless value.is_a?(String)
+
+      parsed = JSON.parse(value)
+      parsed.is_a?(Hash) ? parsed.with_indifferent_access : parsed
+    rescue JSON::ParserError
+      value
     end
   end
 
@@ -17,7 +22,10 @@ module Carto
   # key comparison, fail, and it only applies to the first level.
   class CartoJsonSymbolizerSerializer < CartoJsonSerializer
     def self.load(value)
-      value && symbolize(value)
+      parsed = value.is_a?(String) ? JSON.parse(value) : value
+      parsed && symbolize(parsed)
+    rescue JSON::ParserError
+      value
     end
 
     def self.symbolize(value)
