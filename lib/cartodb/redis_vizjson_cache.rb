@@ -1,3 +1,5 @@
+require 'digest'
+
 module CartoDB
   module Visualization
     class RedisVizjsonCache
@@ -28,8 +30,10 @@ module CartoDB
       end
 
       def key(visualization_id, https_flag = false, vizjson_version = @vizjson_version, domain = CartoDB.session_domain)
-        "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:" \
-        "#{https_flag ? 'https' : 'http'}:#{domain}"
+        base = "visualization:#{visualization_id}:vizjson#{VIZJSON_VERSION_KEY[vizjson_version]}:#{VERSION}:" \
+               "#{https_flag ? 'https' : 'http'}:#{domain}"
+        tag = basemap_api_key_cache_tag
+        tag ? "#{base}:#{tag}" : base
       end
 
       def purge(vizs)
@@ -58,6 +62,14 @@ module CartoDB
 
       def redis
         @redis
+      end
+
+      # Vary the cache entry when the optional CARTO basemaps key changes, without putting the key in Redis.
+      def basemap_api_key_cache_tag
+        configured = defined?(Cartodb) ? Cartodb.get_config(:carto_basemaps_api_key).to_s : ''
+        return nil if configured.empty?
+
+        Digest::SHA256.hexdigest(configured)[0, 8]
       end
 
     end

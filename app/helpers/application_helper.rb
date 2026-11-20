@@ -96,6 +96,10 @@ module ApplicationHelper
       config[:cdn_url] = Cartodb.get_config(:cdn_url)
     end
 
+    if Cartodb.get_config(:carto_basemaps_api_key).present?
+      config[:carto_basemaps_api_key] = Cartodb.get_config(:carto_basemaps_api_key)
+    end
+
     if Cartodb.get_config(:explore_api)
       config[:explore_user] = Cartodb.get_config(:explore_api, 'username')
     end

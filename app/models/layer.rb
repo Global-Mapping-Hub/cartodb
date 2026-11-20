@@ -49,7 +49,9 @@ class Layer < Sequel::Model
   end
 
   def public_values
-    Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+    attrs = Hash[ PUBLIC_ATTRIBUTES.map { |attribute| [attribute, send(attribute)] } ]
+    attrs['options'] = Carto::BasemapsApiKey.apply_to_options(attrs['options']) if attrs['options'].is_a?(Hash)
+    attrs
   end
 
   def validate
@@ -77,7 +79,7 @@ class Layer < Sequel::Model
     public_values.merge(
       infowindow: self.values[:infowindow].nil? ? {} : JSON.parse(self.values[:infowindow]),
       tooltip: JSON.parse(self.values[:tooltip]),
-      options: self.values[:options].nil? ? {} : JSON.parse(self.values[:options])
+      options: self.values[:options].nil? ? {} : Carto::BasemapsApiKey.apply_to_options(JSON.parse(self.values[:options]))
     ).to_json(*args)
   end
 

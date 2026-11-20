@@ -3,3 +3,7 @@
 echo "--- Restoring user metadata"
 bundle exec rake cartodb:redis:user_metadata
 if test $? -ne 0; then exit 1; fi
+
+echo "--- Restoring API keys"
+bundle exec rails runner 'Carto::ApiKey.find_each { |key| key.send(:add_to_redis) }'
+if test $? -ne 0; then exit 1; fi

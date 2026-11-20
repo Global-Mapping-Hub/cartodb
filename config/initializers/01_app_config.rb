@@ -1,5 +1,6 @@
 require_dependency 'carto/configuration'
 require_dependency 'carto/deep_freeze'
+require_dependency 'carto/basemaps_api_key'
 
 module Cartodb
   def self.get_config(*config_chain)
@@ -22,6 +23,9 @@ module Cartodb
       raise "Missing or inaccessible config/app_config.yml: #{e.message}"
     end
     @config ||= config_file_hash[Rails.env].try(:to_options!)
+    if @config && @config[:basemaps]
+      Carto::BasemapsApiKey.apply_to_basemaps!(@config[:basemaps], @config[:carto_basemaps_api_key])
+    end
     Carto.deep_freeze(@config)
 
     if @config.blank?

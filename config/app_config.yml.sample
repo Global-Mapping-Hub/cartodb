@@ -450,6 +450,9 @@ defaults: &defaults
   datasources:
     arcgis_enabled: false
     salesforce_enabled: false
+  # Optional API key for CARTO basemap tiles hosted at basemaps.cartocdn.com.
+  # When set, those tile URLs are requested with ?key=YOUR_KEY. Leave blank to omit the key.
+  carto_basemaps_api_key: ''
   basemaps: # Adding `default: true` at a basemap marks its group as the default one. Its first basemap becomes the default one.
     CARTO:
       voyager_labels:

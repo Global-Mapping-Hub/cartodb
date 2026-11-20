@@ -125,7 +125,9 @@ module Carto
       def options_for_http_basemap_layers(layer_options)
         options = {}
 
-        options[:urlTemplate] = layer_options['urlTemplate'] if layer_options['urlTemplate'].present?
+        if layer_options['urlTemplate'].present?
+          options[:urlTemplate] = Carto::BasemapsApiKey.apply_to_url(layer_options['urlTemplate'])
+        end
         options[:subdomains] = layer_options['subdomains'] if layer_options['subdomains'].present?
         options[:tms] = layer_options['tms'] if layer_options['tms'].present?
 

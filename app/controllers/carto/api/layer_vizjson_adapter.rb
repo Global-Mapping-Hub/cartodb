@@ -24,7 +24,7 @@ module Carto
 
       def public_values
         {
-          'options' => options,
+          'options' => Carto::BasemapsApiKey.apply_to_options(options),
 
           # TODO: kind should be renamed to type
           # rename once a new layer presenter is written. See CartoDB::LayerModule::Presenter#with_kind_as_type

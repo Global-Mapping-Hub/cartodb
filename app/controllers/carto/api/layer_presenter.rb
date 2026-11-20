@@ -190,7 +190,7 @@ module Carto
           StylePropertiesGenerator.new(@layer).migrate(layer_opts)
         end
 
-        layer_opts
+        Carto::BasemapsApiKey.apply_to_options(layer_opts)
       end
 
       def options_data_v1

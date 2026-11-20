@@ -383,7 +383,7 @@ module Carto
       def as_base
         {
           type:    @layer.kind,
-          options: @layer.options
+          options: Carto::BasemapsApiKey.apply_to_options(@layer.options)
         }
       end
 

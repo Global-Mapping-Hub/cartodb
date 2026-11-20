@@ -83,6 +83,25 @@ you should add the labels key to the basemap config, as follows:
     labels:
       url: 'http://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png'
 
+CARTO basemaps API key
+----------------------
+
+Tiles hosted at ``basemaps.cartocdn.com`` can require an API key. Set the optional
+``carto_basemaps_api_key`` in ``config/app_config.yml``:
+
+.. code-block:: yaml
+
+  carto_basemaps_api_key: 'YOUR_KEY'
+
+When the value is present, CARTO adds ``?key=YOUR_KEY`` to every ``basemaps.cartocdn.com``
+URL in the configured basemaps and to cartocdn basemap URLs already saved on maps.
+For example:
+
+``https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=YOUR_KEY``
+
+Leave the value empty to request those tiles without a key. Other basemap providers are unchanged.
+Restart the application after changing it. Cached map definitions pick up the new key on the next read.
+
 Domainless URLs
 ---------------
 
