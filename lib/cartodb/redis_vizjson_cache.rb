@@ -16,7 +16,7 @@ module CartoDB
         key = key(visualization_id, https_flag, vizjson_version)
         value = redis.get(key)
         if value.present?
-          JSON.parse(value, symbolize_names: true)
+          JSON.parse(value, symbolize_names: true, allow_duplicate_key: true)
         else
           result = yield
           serialized = JSON.generate(result)
