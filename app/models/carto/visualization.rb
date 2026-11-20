@@ -190,11 +190,24 @@ class Carto::Visualization < ActiveRecord::Base
   end
 
   def transition_options
-    @transition_options ||= (slide_transition_options.nil? ? {} : JSON.parse(slide_transition_options).symbolize_keys)
+    @transition_options ||= self.class.normalize_transition_options(slide_transition_options)
   end
 
   def transition_options=(value)
-    self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
+    self.slide_transition_options = self.class.normalize_transition_options(value).to_json
+  end
+
+  def self.normalize_transition_options(value)
+    return {} if value.nil?
+    value = value.to_unsafe_h if value.respond_to?(:to_unsafe_h)
+    parsed = value
+    2.times do
+      break unless parsed.is_a?(String)
+      parsed = JSON.parse(parsed)
+    end
+    parsed.is_a?(Hash) ? parsed.deep_symbolize_keys : {}
+  rescue JSON::ParserError
+    {}
   end
 
   def children

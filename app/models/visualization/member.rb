@@ -120,11 +120,11 @@ module CartoDB
       end
 
       def transition_options
-        ::JSON.parse(self.slide_transition_options).symbolize_keys
+        Carto::Visualization.normalize_transition_options(slide_transition_options)
       end
 
       def transition_options=(value)
-        self.slide_transition_options = ::JSON.dump(value.nil? ? DEFAULT_OPTIONS_VALUE : value)
+        self.slide_transition_options = Carto::Visualization.normalize_transition_options(value).to_json
       end
 
       def ==(other_vis)
