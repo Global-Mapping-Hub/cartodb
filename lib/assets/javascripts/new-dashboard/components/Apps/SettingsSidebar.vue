@@ -9,9 +9,6 @@
       <li class="settingssidebar-item">
         <router-link :to="{ name: 'app_permissions' }" class="text is-txtPrimary settingssidebar-link" :class="{'is-active': isAppPermissionsPage()}">{{ $t(`SettingsPages.sidebar.connectedApps`) }}</router-link>
       </li>
-      <li v-if="!isLocallyHosted && (isOrgAdmin || !isInsideOrg)" class="settingssidebar-item">
-        <a :href="planUrl" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.billing`) }}</a>
-      </li>
       <li v-if="isOrgAdmin" class="settingssidebar-item">
         <a :href="`${ baseUrl }/organization`" class="text is-txtPrimary settingssidebar-link">{{ $t(`SettingsPages.sidebar.organizationSettings`) }}</a>
       </li>
@@ -45,13 +42,8 @@ export default {
     ...mapState({
       baseUrl: state => state.user.base_url,
       user: state => state.user,
-      planUrl: state => state.config.plan_url,
-      isLocallyHosted: state => state.config.cartodb_com_hosted,
       hasDirectDBConnection: state => hasFeatureEnabled(state.user, 'dbdirect')
     }),
-    isInsideOrg () {
-      return this.$store.getters['user/isOrganizationUser'];
-    },
     isOrgAdmin () {
       return this.user.org_admin;
     }

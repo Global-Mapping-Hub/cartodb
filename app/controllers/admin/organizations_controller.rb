@@ -15,7 +15,6 @@ class Admin::OrganizationsController < Admin::AdminController
   before_filter :load_notification, only: [:destroy_notification]
   before_filter :load_organization_notifications, only: [:settings, :auth, :show, :groups, :notifications,
                                                          :new_notification]
-  helper_method :show_billing
 
   layout 'application'
 
@@ -201,10 +200,6 @@ class Admin::OrganizationsController < Admin::AdminController
       flash.now[:warning] = "#{warning.join('. ')}."
       flash.now[:warning_detail] = "Users won't be able to sign up to your organization. <a href='mailto:contact@carto.com'>Contact us</a> to increase your quota."
     end
-  end
-
-  def show_billing
-    !Cartodb.config[:cartodb_com_hosted].present? && (!current_user.organization.present? || current_user.organization_owner?)
   end
 
   def load_ldap_configuration
