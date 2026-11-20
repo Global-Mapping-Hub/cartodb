@@ -200,7 +200,7 @@ class Carto::Map < ActiveRecord::Base
     self.center ||= DEFAULT_OPTIONS[:center]
     self.provider ||= DEFAULT_OPTIONS[:provider]
 
-    self.options ||= {}
+    self.options = (options || {}).with_indifferent_access
     options[:dashboard_menu] = true if options[:dashboard_menu].nil?
     options[:layer_selector] = false if options[:layer_selector].nil?
     options[:legends] = legends if options[:legends].nil?
