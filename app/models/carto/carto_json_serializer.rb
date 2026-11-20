@@ -56,7 +56,9 @@ class JsonSchemaValidator < ActiveModel::EachValidator
     value_for_json = prepare_for_json(value)
 
     schema = Carto::Definition.instance.load_from_file("lib/formats/#{record.class.to_s.underscore}/#{attribute}.json")
-    errors = JSON::Validator.fully_validate(schema, value_for_json, strict: true, version: :draft4)
+    # json-schema 2.8 treats strict as "every property is required" under draft4.
+    # These schemas already list required properties and set additionalProperties.
+    errors = JSON::Validator.fully_validate(schema, value_for_json, version: :draft4)
     record.errors[attribute] << errors.join(', ') if errors.any?
   end
 
