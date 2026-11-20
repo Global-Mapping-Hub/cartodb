@@ -71,7 +71,12 @@ module CartoDB
       end
 
       def executable_path
-        `#{ogr2ogr_binary}`.strip
+        binary = ogr2ogr_binary.to_s.strip
+        # Config may be a shell command such as "which ogr2ogr", or an absolute path.
+        # Running the binary itself prints usage text, which then gets executed as the program.
+        return binary if binary.start_with?('/')
+
+        `#{binary}`.strip
       end
 
       def command
