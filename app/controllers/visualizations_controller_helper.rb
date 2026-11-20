@@ -65,9 +65,9 @@ module VisualizationsControllerHelper
   # Implicit order due to legacy code: 1st return canonical/table/Dataset if present, else derived/visualization/Map
   def get_priority_visualization(visualization_id, user_id: nil, organization_id: nil)
     params = { user_id: user_id, organization_id: organization_id }
-    visualization = get_priority_visualization_forcing_name(visualization_id, params.merge(force_name: false))
+    visualization = get_priority_visualization_forcing_name(visualization_id, **params.merge(force_name: false))
     unless visualization
-      visualization = get_priority_visualization_forcing_name(visualization_id, params.merge(force_name: true))
+      visualization = get_priority_visualization_forcing_name(visualization_id, **params.merge(force_name: true))
     end
     visualization
   end

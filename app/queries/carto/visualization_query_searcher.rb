@@ -32,7 +32,7 @@ class Carto::VisualizationQuerySearcher
     %{
       ts_rank(
         #{tsvector},
-        plainto_tsquery('english', #{ActiveRecord::Base.sanitize(search_pattern)})
+        plainto_tsquery('english', #{ActiveRecord::Base.connection.quote(search_pattern)})
       )
     }.squish
   end
