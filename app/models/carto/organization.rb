@@ -286,7 +286,11 @@ module Carto
     end
 
     def ensure_auth_saml_configuration
-      self.auth_saml_configuration ||= {}
+      config = auth_saml_configuration
+      config = JSON.parse(config) while config.is_a?(String)
+      self.auth_saml_configuration = config.is_a?(Hash) ? config : {}
+    rescue JSON::ParserError
+      self.auth_saml_configuration = {}
     end
 
   end

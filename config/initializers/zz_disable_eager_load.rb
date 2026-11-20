@@ -156,7 +156,11 @@ module CartodbDockerJsonCoder
   end
 
   def load(value)
-    parsed = value.is_a?(String) ? JSON.parse(value) : value
+    parsed = value
+    3.times do
+      break unless parsed.is_a?(String)
+      parsed = JSON.parse(parsed)
+    end
     super(parsed)
   rescue JSON::ParserError
     super(value)

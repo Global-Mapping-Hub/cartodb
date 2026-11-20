@@ -91,7 +91,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def settings_update
     valid_password_confirmation
-    attributes = params[:organization]
+    attributes = organization_attributes
 
     if attributes.include?(:avatar_url) && valid_avatar_file?(attributes[:avatar_url])
       @organization.avatar_url = attributes[:avatar_url]
@@ -112,7 +112,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.location = attributes[:location]
 
     @organization.update_in_central
-    @organization.save(raise_on_failure: true)
+    @organization.save!
 
     redirect_to CartoDB.url(self, 'organization_settings', user: current_user),
                 flash: { success: "Your changes have been saved correctly." }
@@ -123,7 +123,7 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'settings', status: e.status
-  rescue Sequel::ValidationFailed => e
+  rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
     flash.now[:error] = "There's been a validation error, check your values"
     render action: 'settings'
   end
@@ -151,7 +151,7 @@ class Admin::OrganizationsController < Admin::AdminController
 
   def auth_update
     valid_password_confirmation
-    attributes = params[:organization]
+    attributes = organization_attributes
     @organization.whitelisted_email_domains = attributes[:whitelisted_email_domains].split(",")
     @organization.auth_username_password_enabled = attributes[:auth_username_password_enabled]
     @organization.auth_google_enabled = attributes[:auth_google_enabled]
@@ -159,7 +159,7 @@ class Admin::OrganizationsController < Admin::AdminController
     @organization.strong_passwords_enabled = attributes[:strong_passwords_enabled]
     @organization.password_expiration_in_d = attributes[:password_expiration_in_d]
     @organization.update_in_central
-    @organization.save(raise_on_failure: true)
+    @organization.save!
 
     redirect_to CartoDB.url(self, 'organization_auth', user: current_user),
                 flash: { success: "Your changes have been saved correctly." }
@@ -170,12 +170,16 @@ class Admin::OrganizationsController < Admin::AdminController
   rescue Carto::PasswordConfirmationError => e
     flash.now[:error] = e.message
     render action: 'auth', status: e.status
-  rescue Sequel::ValidationFailed => e
+  rescue Sequel::ValidationFailed, ActiveRecord::RecordInvalid
     flash.now[:error] = "There's been a validation error, check your values"
     render action: 'auth'
   end
 
   private
+
+  def organization_attributes
+    params[:carto_organization] || params[:organization] || ActionController::Parameters.new
+  end
 
   def load_organization_and_members
     raise RecordNotFound unless current_user.organization_admin?
