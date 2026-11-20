@@ -387,7 +387,7 @@ module Carto
       token = params[:api_key]
       username = CartoDB.extract_subdomain(request)
     end
-    [User[username: username], token]
+    [::User[username: username], token]
   end
 
   def split_auth
