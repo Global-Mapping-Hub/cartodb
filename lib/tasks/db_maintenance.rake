@@ -868,7 +868,11 @@ namespace :cartodb do
         organization.save
       end
       uo = CartoDB::UserOrganization.new(organization.id, user.id)
-      uo.promote_user_to_admin
+      uo.promote_user_to_admin if organization.owner_id.nil?
+      # Later boots skip promotion once an owner exists. Group creation runs
+      # CREATE ROLE as that owner, and CREATEROLE is not inherited from the admin role.
+      user.reload
+      user.db_service.grant_admin_permissions
     end
 
     desc "Create new organization without owner"
@@ -1179,7 +1183,7 @@ namespace :cartodb do
       organizations = args[:organization_name].present? ? Carto::Organization.where(name: args[:organization_name]) : Carto::Organization.all
       run_for_organizations_owner(organizations) do |owner|
         begin
-          owner.db_service.configure_extension_org_metadata_api_endpoint
+          owner.sequel_user.db_service.configure_extension_org_metadata_api_endpoint
         rescue StandardError => e
           puts "ERROR for #{owner.organization.name}: #{e.message}"
         end

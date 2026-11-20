@@ -79,14 +79,16 @@ module CartoDB
         set_user_as_organization_member
         rebuild_quota_trigger
 
+        # CREATEROLE is not inherited. Grant it before owner setup, which can fail
+        # after the organization row is saved and would otherwise skip role creation.
+        if @user.organization_admin?
+          grant_admin_permissions
+        end
+
         # INFO: organization privileges are set for org_member_role, which is assigned to each org user
         if @user.organization_owner?
           setup_organization_owner
           create_ghost_tables_event_trigger
-        end
-
-        if @user.organization_admin?
-          grant_admin_permissions
         end
 
         # Rebuild the geocoder api user config to reflect that is an organization user
