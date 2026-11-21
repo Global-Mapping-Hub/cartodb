@@ -71,6 +71,26 @@ describe Admin::OrganizationsController do
       response.status.should eq 302
     end
 
+    it 'saves organization details posted by the settings form' do
+      login_as(@org_user_owner, scope: @org_user_owner.username)
+      put organization_settings_update_url(user_domain: @org_user_owner.username),
+          carto_organization: {
+            display_name: 'City maps',
+            description: 'Shared maps for the team',
+            website: 'https://example.com',
+            color: '#00aa00',
+            admin_email: @org_user_owner.email
+          },
+          password_confirmation: @org_user_owner.password
+
+      response.status.should eq 302
+      @organization.reload
+      @organization.display_name.should eq 'City maps'
+      @organization.description.should eq 'Shared maps for the team'
+      @organization.website.should eq 'https://example.com'
+      @organization.color.should eq '#00aa00'
+    end
+
     it 'fails to update if no password_confirmation' do
       login_as(@org_user_owner, scope: @org_user_owner.username)
       put organization_settings_update_url(user_domain: @org_user_owner.username), payload

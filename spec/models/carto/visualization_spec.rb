@@ -724,4 +724,20 @@ describe Carto::Visualization do
       end
     end
   end
+
+  describe '#widgets' do
+    it 'loads widgets for a map' do
+      map = ::Map.create(user_id: @user.id)
+      map.add_layer(::Layer.create(kind: 'carto'))
+      visualization = Carto::Visualization.new(
+        user_id: @user.id,
+        name: unique_name('map'),
+        map_id: map.id,
+        type: Carto::Visualization::TYPE_DERIVED,
+        privacy: Carto::Visualization::PRIVACY_PUBLIC
+      )
+
+      visualization.widgets.should eq []
+    end
+  end
 end

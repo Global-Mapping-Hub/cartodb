@@ -104,6 +104,27 @@ describe Carto::Api::PermissionsController do
       response.fetch(:acl).should eq client_acl_final
     end
 
+    it 'changes map access when the acl arrives as form parameters' do
+      permission = @visualization.permission
+      permission.acl = []
+      permission.save
+
+      put "/api/v1/perm/#{permission.id}?api_key=#{@api_key}&user_domain=#{@user.username}",
+          acl: [
+            {
+              type: Carto::Permission::TYPE_USER,
+              entity: { id: @user2.id },
+              access: Carto::Permission::ACCESS_READONLY
+            }
+          ]
+
+      last_response.status.should eq 200
+      body = JSON.parse(last_response.body, symbolize_names: true)
+      body.fetch(:acl).size.should eq 1
+      body.fetch(:acl).first[:access].should eq Carto::Permission::ACCESS_READONLY
+      body.fetch(:acl).first[:entity][:id].should eq @user2.id
+    end
+
   end
 
   describe 'PUT/DELETE /api/v1/perm' do

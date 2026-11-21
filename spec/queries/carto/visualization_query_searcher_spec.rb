@@ -34,6 +34,10 @@ describe Carto::VisualizationQuerySearcher do
       expect(result.size).to eql 3
     end
 
+    it 'searches dataset and map names that contain a quote' do
+      expect { @searcher.search("o'brien").to_a }.not_to raise_error
+    end
+
     it 'finds singular and plural words with a singular one' do
       result = @searcher.search('industry')
 

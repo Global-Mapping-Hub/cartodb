@@ -257,3 +257,20 @@ describe Carto::Api::RecordsController do
     end
   end
 end
+
+describe 'dataset row parameters' do
+  it 'keeps column values and drops request credentials' do
+    controller = Carto::Api::RecordsController.new
+    controller.params = ActionController::Parameters.new(
+      'name' => 'Stores',
+      'description' => 'Customer locations',
+      'api_key' => 'secret',
+      'user_domain' => 'alice',
+      'table_id' => 'stores',
+      'controller' => 'records',
+      'action' => 'create'
+    )
+
+    controller.send(:filtered_row).should eq(name: 'Stores', description: 'Customer locations')
+  end
+end

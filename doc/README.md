@@ -6,6 +6,7 @@ Yes, there's a lot of docs missing, we appreciate [contributions](../CONTRIBUTIN
 - [redis](redis.md)
 - [Frontend](frontend/README.md)
 - [Logging](logging.md)
+- [Editor compatibility specs](editor-compatibility-specs.md)
 
 #### Developer Center
 
