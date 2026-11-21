@@ -52,7 +52,7 @@ describe 'editor flows fixed for users, datasets, and maps' do
         'scrollwheel' => nil
       }
 
-      map.ensure_options
+      map.send(:ensure_options)
 
       expect { map.options.to_json }.not_to raise_error
       map.options[:dashboard_menu].should eq true
@@ -111,7 +111,7 @@ describe 'editor flows fixed for users, datasets, and maps' do
 
       organization.send(:ensure_auth_saml_configuration)
 
-      organization.auth_saml_configuration.should eq('enabled' => true)
+      organization.auth_saml_configuration.should eq(enabled: true)
     end
 
     it 'clears saml configuration that is not json' do

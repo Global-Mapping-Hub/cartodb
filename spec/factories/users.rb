@@ -8,6 +8,27 @@ require 'cartodb-common'
 include AccountTypesHelper
 include UniqueNamesHelper
 
+module CartodbTestRemoteDbUser
+  def enable_remote_db_user(*)
+    true
+  end
+end
+
+def cartodb_stub_remote_db_user
+  service = CartoDB::UserModule::DBService
+  if defined?(RSpec) && RSpec.current_example
+    service.any_instance.stubs(:enable_remote_db_user).returns(true)
+  elsif !service.ancestors.include?(CartodbTestRemoteDbUser)
+    service.prepend(CartodbTestRemoteDbUser)
+  end
+end
+
+def cartodb_unstub_remote_db_user
+  return unless defined?(RSpec) && RSpec.current_example
+
+  CartoDB::UserModule::DBService.any_instance.unstub(:enable_remote_db_user)
+end
+
 FactoryGirl.define do
   factory :user, class: ::User do
     to_create(&:save)
@@ -72,7 +93,7 @@ FactoryGirl.define do
     end
 
     before(:create) do |user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      cartodb_stub_remote_db_user
       create_account_type_fg(user.account_type)
     end
   end
@@ -98,13 +119,13 @@ FactoryGirl.define do
     end
 
     before(:create) do |carto_user|
-      CartoDB::UserModule::DBService.any_instance.stubs(:enable_remote_db_user).returns(true)
+      cartodb_stub_remote_db_user
       create_account_type_fg(carto_user.account_type)
     end
 
     after(:create) do |carto_user|
       ::User.where(id: carto_user.id).first.after_create
-      CartoDB::UserModule::DBService.any_instance.unstub
+      cartodb_unstub_remote_db_user
     end
 
     trait :locked do

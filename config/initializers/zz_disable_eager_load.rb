@@ -161,6 +161,9 @@ module CartodbDockerJsonCoder
       break unless parsed.is_a?(String)
       parsed = JSON.parse(parsed)
     end
+    # Hand a JSON string back to the original coder so it can apply
+    # indifferent access or symbol keys. A parsed Hash skips that step.
+    parsed = JSON.generate(parsed) if parsed.is_a?(Hash) || parsed.is_a?(Array)
     super(parsed)
   rescue JSON::ParserError
     super(value)

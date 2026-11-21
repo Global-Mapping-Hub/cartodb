@@ -14,6 +14,7 @@ require File.expand_path('../../config/environment', __FILE__)
 ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:TestFixtures)
 
 require 'rspec/rails'
+require_relative './support/mocha_any_instance'
 
 Resque.inline = true
 
@@ -25,6 +26,7 @@ RSpec.configure do |config|
   # rspec-rails selects rspec-mocks after this file's earlier configuration.
   # Mocha is what the suite's any_instance stubs use, including hooks outside examples.
   config.mock_with :mocha
+  config.infer_spec_type_from_file_location!
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
   config.include Capybara::DSL
