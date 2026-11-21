@@ -69,7 +69,7 @@ module Carto
       protected
 
       def filtered_row
-        params.reject { |k, _| REJECT_PARAMS.include?(k) }.symbolize_keys
+        params.to_unsafe_h.reject { |key, _| REJECT_PARAMS.include?(key) }.symbolize_keys
       end
 
       def load_user_table
