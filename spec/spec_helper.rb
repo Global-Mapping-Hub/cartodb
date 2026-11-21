@@ -14,6 +14,12 @@ ActiveRecord.send(:remove_const, :TestFixtures) if ActiveRecord.const_defined?(:
 
 require 'rspec/rails'
 
+module CartodbTestSkipGhostTables
+  def create_ghost_tables_event_trigger
+    nil
+  end
+end
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
@@ -26,6 +32,9 @@ Resque.inline = true
 EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
 
 RSpec.configure do |config|
+  # rspec-rails selects rspec-mocks after this file's earlier configuration.
+  # Mocha is what the suite's any_instance stubs use, including hooks outside examples.
+  config.mock_with :mocha
   config.include SpecHelperHelpers
   config.include CartoDB::Factories
   config.include HelperMethods
@@ -50,8 +59,10 @@ RSpec.configure do |config|
       close_pool_connections
       drop_leaked_test_user_databases
     end
+  end
 
-    CartoDB::UserModule::DBService.any_instance.stubs(:create_ghost_tables_event_trigger)
+  unless CartoDB::UserModule::DBService.ancestors.include?(CartodbTestSkipGhostTables)
+    CartoDB::UserModule::DBService.prepend(CartodbTestSkipGhostTables)
   end
 
   config.after(:all) do

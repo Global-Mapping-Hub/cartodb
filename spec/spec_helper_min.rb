@@ -22,6 +22,9 @@ Resque.inline = true
 EmailAddress::Config.configure(local_format: :conventional, host_validation: :syntax)
 
 RSpec.configure do |config|
+  # rspec-rails selects rspec-mocks after this file's earlier configuration.
+  # Mocha is what the suite's any_instance stubs use, including hooks outside examples.
+  config.mock_with :mocha
   config.include SpecHelperHelpers
   config.include NamedMapsHelper
   config.include Capybara::DSL

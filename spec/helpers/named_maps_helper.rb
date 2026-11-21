@@ -1,6 +1,15 @@
 module NamedMapsHelper
+  module NamedMapsBypass
+    def show(*) = nil
+    def create(*) = true
+    def update(*) = true
+    def destroy(*) = true
+  end
+
   def bypass_named_maps
-    Carto::NamedMaps::Api.any_instance.stubs(show: nil, create: true, update: true, destroy: true)
+    return if Carto::NamedMaps::Api.ancestors.include?(NamedMapsBypass)
+
+    Carto::NamedMaps::Api.prepend(NamedMapsBypass)
   end
 
   def bypass_named_maps_requests
