@@ -1,14 +1,16 @@
-Development
------------
+5.0.0 (2026-11-22)
+-------------------
 
 ### NOTICES
-- None yet
+* Runs on Ruby 4.0.10 and Rails 8.1.
+* Frontend package is `2.0.0-assets.0`. Until the assets are rebuilt, the published `1.0.0-assets.208` bundle is what the pages load.
 
 ### Features
-- None yet
+* Organization admin is no longer held to the hosted free-plan quotas.
 
 ### Bug fixes / enhancements
-- None yet
+* `.carto` export and import work against the internal SQL API on Rails 8.
+* Password-protected maps and the other public pages load the stylesheets this build publishes.
 
 4.44.0 (2020-11-20)
 -------------------
