@@ -3,6 +3,7 @@ require 'fileutils'
 require 'active_record'
 require_relative '../../services/carto/visualizations_export_service_2'
 require_relative '../../../services/sql-api/sql_api'
+require_relative '../../helpers/file_upload'
 require_relative './visualization'
 require_dependency 'carto/visualization_exporter'
 

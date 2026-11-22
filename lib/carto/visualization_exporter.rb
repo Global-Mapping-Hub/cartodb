@@ -11,7 +11,8 @@ module Carto
       table_name = user_table.name
 
       query = %{select * from "#{table_name}"}
-      url = sql_api_query_url(query, table_name, user_table.user, privacy(user_table), format)
+      api = CartoDB::SQLApi.with_user(user_table.user, privacy(user_table))
+      url = api.download_url(query, format, table_name)
       exported_file = "#{folder}/#{table_name}.#{format}"
       @http_client.get_file(url, exported_file, ssl_verifypeer: false, ssl_verifyhost: 0)
     end

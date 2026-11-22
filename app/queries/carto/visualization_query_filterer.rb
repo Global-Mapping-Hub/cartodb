@@ -54,7 +54,7 @@ class Carto::VisualizationQueryFilterer
       #     This is precisely what this hacks achieves, by tricking the `FROM` part of the query
       # Context: https://github.com/CartoDB/cartodb/issues/13970
       user = Carto::User.where(id: params[:shared_with_user_id]).first
-      shared_vizs = Carto::SharedEntity.where(recipient_id: recipient_ids(user)).select(:entity_id).uniq
+      shared_vizs = Carto::SharedEntity.where(recipient_id: recipient_ids(user)).select(:entity_id).distinct
       query = query.from([Arel::Nodes::SqlLiteral.new("
         visualizations
         JOIN
@@ -67,7 +67,7 @@ class Carto::VisualizationQueryFilterer
       # TODO: sql strings are suboptimal and compromise compositability, but
       # I haven't found a better way to do this OR in Rails
       shared_with_viz_ids = ::Carto::VisualizationQueryBuilder.new.with_shared_with_user_id(
-        params[:owned_by_or_shared_with_user_id]).build.uniq.pluck('visualizations.id')
+        params[:owned_by_or_shared_with_user_id]).build.distinct.pluck('visualizations.id')
       query = if shared_with_viz_ids.empty?
                 query.where(' "visualizations"."user_id" = (?)', params[:owned_by_or_shared_with_user_id])
               else

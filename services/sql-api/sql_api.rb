@@ -20,12 +20,19 @@ module CartoDB
 
     # privacy: 'public' / 'private'
     def self.with_username_api_key(username, api_key, privacy,
-                                   base_url: ::ApplicationHelper.sql_api_url(username, privacy))
+                                   base_url: server_base_url(username, privacy))
       new(
         base_url: base_url,
         username: username,
         api_key: api_key
       )
+    end
+
+    # Jobs inside the editor cannot reach the published localhost port.
+    # An internal SQL API host keeps those calls on the Docker network.
+    def self.server_base_url(username, privacy)
+      key = ::Cartodb.get_config(:sql_api, 'internal') ? 'internal' : privacy
+      ::ApplicationHelper.sql_api_url(username, key)
     end
 
     def self.with_user(user, privacy)
@@ -41,6 +48,13 @@ module CartoDB
 
     def url(query, format = '', filename = '')
       build_request(query, format, filename, :post, :public).url
+    end
+
+    # A GET URL that includes the query. File downloads cannot reuse the POST body.
+    def download_url(query, format = '', filename = '')
+      uri = URI(build_base_url(:public))
+      uri.query = URI.encode_www_form(build_params(query, format, filename))
+      uri.to_s
     end
 
     def export_table_url(table, format = 'gpkg', filename = table)

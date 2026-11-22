@@ -121,7 +121,7 @@ module Carto
     end
 
     def ensure_unique_name(user, visualization)
-      existing_names = Carto::Visualization.uniq
+      existing_names = Carto::Visualization.distinct
                                            .where(user_id: user.id)
                                            .where("name ~ ?", "#{Regexp.escape(visualization.name)}( Import)?( \d*)?$")
                                            .where(type: visualization.type)
