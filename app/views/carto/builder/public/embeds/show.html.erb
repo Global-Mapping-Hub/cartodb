@@ -41,20 +41,4 @@
   </script>
   <%= javascript_include_tag 'common', 'common_vendor', 'builder_embed' %>
 
-  <% if Cartodb.get_config(:graphite_public, 'host') %>
-    <%= editor_javascript_include_tag "statsc.js" %>
-  <% end %>
-  <script>
-    (function () {
-      <% if Cartodb.get_config(:graphite_public, 'host') %>
-        if (location.protocol.indexOf('https') === -1) {
-          statsc.connect('http://<%= Cartodb.get_config(:graphite_public, 'host') %>:<%= Cartodb.get_config(:graphite_public, 'port') %>/');
-          cartodb.core.Profiler.backend(function () {
-            statsc.send.apply(statsc, arguments);
-          });
-        }
-      <% end %>
-    }());
-  </script>
-
 <% end %>

@@ -4,13 +4,6 @@
 </script>
 <% if content_for? :dashboard_js %>
     <%= yield :dashboard_js %>
-<% else %>
-    <%= content_for(:js) do -%>
-        <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'dashboard_templates.js', 'dashboard_deps.js', 'dashboard.js' -%>
-    <% end %>
-<% end %>
-<%= content_for(:css) do -%>
-    <%= stylesheet_link_tag 'dashboard.css', :media => 'all' %>
 <% end %>
 <%= render :partial => 'shared/flash_message' %>
 <%= render :template => 'layouts/application' %>

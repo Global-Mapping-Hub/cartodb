@@ -15,11 +15,7 @@
 <% end %>
 
 <%= content_for(:css) do %>
-  <% if @has_engine_enabled %>
-    <%= stylesheet_link_tag 'api_keys_new', :media => 'all' %>
-  <% else %>
-    <%= editor_stylesheet_link_tag 'api_keys', :media => 'all' %>
-  <% end %>
+  <%= stylesheet_link_tag 'api_keys_new', :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

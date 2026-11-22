@@ -10,7 +10,7 @@
 <%= content_for(:body_class) do %> PublicMap <% end %>
 
 <%= content_for(:css) do %>
-  <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_map' %>
+  <%= stylesheet_link_tag 'common_new', 'deep_insights_new', 'public_map_new', 'cartodb' %>
 <% end %>
 
 <%= content_for(:content) do %>
@@ -387,28 +387,12 @@
 
   </script>
 
-  <%= editor_javascript_include_tag 'cdb.js', 'templates.js', 'public_map_deps', 'public_map'  %>
+  <%= javascript_include_tag 'cdb' %>
 
   <script>
-
     $(function() {
-      <% if Cartodb.config[:graphite_public] %>
-        if (location.protocol.indexOf('https') === -1) {
-          jQuery.getScript('<%= javascript_path "statsc.js" %>', function(ready) {
-            statsc.connect('http://<%= Cartodb.config[:graphite_public]['host'] %>:<%= Cartodb.config[:graphite_public]['port'] %>/');
-            cartodb.core.Profiler.backend(function () {
-              statsc.send.apply(statsc, arguments);
-            })
-            // stop sending stats after 11 seconds
-            // statsc send stats in 5 secs interval so allow to send at least twice
-            setTimeout(function() {
-              cartodb.core.Profiler.backend(null);
-            }, 11*1000);
-          })
-        }
-      <% end %>
+      cartodb.createVis('map', vizdata, map_options);
     });
-
   </script>
 
 

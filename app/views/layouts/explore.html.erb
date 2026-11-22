@@ -14,7 +14,7 @@
     <meta property="og:type" content="visualization" />
     <meta property="og:url" content="<%= request.original_url %>" />
     <meta property="og:image" content="<%= @avatar_url %>" />
-    <%= editor_stylesheet_link_tag 'cartodb', 'common', 'public_dashboard', 'user_feed', 'explore' %>
+    <%= stylesheet_link_tag 'deep_insights_new', 'common_new', 'public_dashboard_new', 'user_feed_new' %>
     <%= insert_google_tag_manager('primary') %>
   </head>
   <body class="CDB-Text PublicBody PublicBody--grey">
@@ -43,7 +43,7 @@
     </script>
 
     <%= insert_trackjs() %>
-    <%= editor_javascript_include_tag 'cdb.js', 'templates', 'explore_deps', 'explore' %>
+    <%= javascript_include_tag 'common', 'common_vendor' %>
     <%= yield :js %>
   </body>
 </html>

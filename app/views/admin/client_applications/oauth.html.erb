@@ -8,10 +8,43 @@
     var user_data = <%= safe_js_object current_user.data.to_json %>;
     var upgrade_url = "<%= current_user.upgrade_url(request.protocol) %>";
   </script>
-  <%= editor_javascript_include_tag 'cdb.js', 'models.js', 'keys_templates.js', 'keys_deps.js', 'keys.js' -%>
+  <%= javascript_include_tag 'common', 'common_vendor' %>
+  <script>
+    document.addEventListener('click', function (event) {
+      var copy = event.target.closest('.js-copy-value');
+      if (copy) {
+        var input = copy.parentNode.querySelector('.js-input');
+        if (input) {
+          input.focus();
+          input.select();
+          document.execCommand('copy');
+        }
+      }
+
+      var regenerate = event.target.closest('.js-regenerateOauth');
+      if (!regenerate) return;
+      event.preventDefault();
+      var token = document.querySelector('input[name="authenticity_token"]');
+      var form = document.createElement('form');
+      form.method = 'post';
+      form.action = '<%= CartoDB.url(self, 'regenerate_oauth', user: current_user) %>';
+      var method = document.createElement('input');
+      method.type = 'hidden';
+      method.name = '_method';
+      method.value = 'delete';
+      form.appendChild(method);
+      var csrf = document.createElement('input');
+      csrf.type = 'hidden';
+      csrf.name = 'authenticity_token';
+      csrf.value = token ? token.value : '';
+      form.appendChild(csrf);
+      document.body.appendChild(form);
+      form.submit();
+    });
+  </script>
 <% end %>
 <%= content_for(:css) do %>
-  <%= stylesheet_link_tag 'keys.css', :media => 'all' %>
+  <%= stylesheet_link_tag 'oauth', :media => 'all' %>
 <% end %>
 
 <%= render :partial => 'shared/flash_message' %>

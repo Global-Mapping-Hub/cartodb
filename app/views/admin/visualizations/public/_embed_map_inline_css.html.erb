@@ -15,9 +15,9 @@
   #not_supported_dialog ul li {float:left; margin:0; padding:0; border-right:1px solid #D9D9D9;}
   #not_supported_dialog ul li a {display:block; width:118px; height:74px; background-repeat:no-repeat; background-position:center center; font-size:0; line-height:0; text-indent:-9999px;}
   #not_supported_dialog ul li.last {border:none;}
-  #not_supported_dialog a.safari {background-image:url('<%= editor_image_path "layout/safari.png" %>');}
-  #not_supported_dialog a.chrome {background-image:url('<%= editor_image_path "layout/chrome.png" %>');}
-  #not_supported_dialog a.firefox {background-image:url('<%= editor_image_path "layout/firefox.png" %>');}
+  #not_supported_dialog a.safari {background-image:url('<%= image_path "layout/safari.png" %>');}
+  #not_supported_dialog a.chrome {background-image:url('<%= image_path "layout/chrome.png" %>');}
+  #not_supported_dialog a.firefox {background-image:url('<%= image_path "layout/firefox.png" %>');}
 
 
   :-webkit-full-screen .cartodb-map-wrapper { height: 100%!important; }
@@ -41,4 +41,4 @@
 
 </style>
 
-<%= editor_stylesheet_link_tag 'cartodb.css' %>
+<%= stylesheet_link_tag 'cartodb' %>
