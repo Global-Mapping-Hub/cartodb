@@ -37,14 +37,9 @@ class ApplicationController < ActionController::Base
   ME_ENDPOINT_COOKIE = :_cartodb_base_url
   IGNORE_PATHS_FOR_CHECK_USER_STATE = %w(unverified maintenance_mode lockout login logout unauthenticated multifactor_authentication).freeze
 
-  def self.ssl_required(*splat)
-    if Cartodb.config[:ssl_required] == true
-      if splat.any?
-        force_ssl only: splat
-      else
-        force_ssl
-      end
-    end
+  def self.ssl_required(*_splat)
+    # Rails 8 removed ActionController::ForceSSL. The public router already
+    # redirects plain HTTP to HTTPS.
   end
 
   def self.ssl_allowed(*_splat)

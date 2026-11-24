@@ -20,16 +20,24 @@ module Carto
       private
 
       def load_event
-        event_name = params[:name]
+        event_name = params[:name].to_s
+        raise Carto::UnprocesableEntityError.new('name not provided') if event_name.empty?
 
-        raise Carto::UnprocesableEntityError.new('name not provided') unless event_name
+        properties = params[:properties].presence || {}
+        reporter_id = current_viewer.try(:id)
+        require_dependency 'carto/tracking/events'
 
-        modulized_name = "Carto::Tracking::Events::#{event_name.parameterize('_').camelize}"
+        @event = Carto::Tracking::Events::SegmentEvent.build(event_name, reporter_id, properties)
+        @event ||= named_event(event_name, reporter_id, properties)
+        raise Carto::LoadError.new("Event not found: #{event_name}") unless @event
+      end
 
-        @event = Carto::Tracking::Events::SegmentEvent.build(params[:name], current_viewer.try(:id), params[:properties])
-        @event ||= modulized_name.constantize.new(current_viewer.try(:id), params[:properties])
-      rescue NameError
-        raise Carto::LoadError.new("Event not found: #{event_name}")
+      def named_event(event_name, reporter_id, properties)
+        [event_name, event_name.tr('-', '_')].map(&:camelize).uniq.each do |candidate|
+          event_class = "Carto::Tracking::Events::#{candidate}".safe_constantize
+          return event_class.new(reporter_id, properties) if event_class
+        end
+        nil
       end
     end
   end

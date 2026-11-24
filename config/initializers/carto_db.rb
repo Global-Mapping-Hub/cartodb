@@ -241,7 +241,12 @@ module CartoDB
   end
 
   def self.use_https?
-    Cartodb.config[:ssl_required] == true
+    return true if Cartodb.config[:ssl_required] == true
+
+    common = Cartodb.config[:common_data]
+    return false unless common.is_a?(Hash)
+
+    (common[:protocol] || common['protocol']).to_s == 'https'
   end
 
   def self.get_session_domain

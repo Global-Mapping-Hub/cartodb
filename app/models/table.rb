@@ -1136,7 +1136,7 @@ class Table
         %{
             SELECT
               #{size_calc} AS size,
-              reltuples::integer AS row_count
+              CASE WHEN reltuples < 0 THEN 0 ELSE reltuples::bigint END AS row_count
             FROM pg_class
             JOIN pg_catalog.pg_namespace n on n.oid = pg_class.relnamespace
             WHERE relname = ?
@@ -1151,9 +1151,11 @@ class Table
       # INFO: we don't want code to fail because of SQL error
       CartoDB.notify_exception(exception)
     end
-    data = { size: nil, row_count: nil } if data.nil?
-
-    data
+    data = {} if data.nil?
+    {
+      size: (data[:size] || data['size'] || 0).to_i,
+      row_count: (data[:row_count] || data['row_count'] || 0).to_i
+    }
   end
 
   def estimated_row_count

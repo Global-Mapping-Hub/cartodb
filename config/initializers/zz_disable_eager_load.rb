@@ -205,7 +205,7 @@ Rails.application.config.to_prepare do
   end
   Carto::User.prepend(CartodbDockerNotifications) unless Carto::User.ancestors.include?(CartodbDockerNotifications)
 
-  # The dashboard API rewrites every user URL to https. This server is HTTP only.
+  # The dashboard compares this URL with the browser address and reloads when they differ.
   presenter = Carto::Api::UserPresenter
   unless presenter.ancestors.include?(CartodbDockerHttpBaseUrl)
     presenter.prepend(CartodbDockerHttpBaseUrl)
@@ -237,9 +237,17 @@ end
 module CartodbDockerHttpBaseUrl
   def data(options = {})
     payload = super
-    if payload.is_a?(Hash) && payload[:base_url].is_a?(String) && Cartodb.config[:ssl_required] != true
-      payload[:base_url] = payload[:base_url].sub(/\Ahttps:/, 'http:')
+    return payload unless payload.is_a?(Hash) && payload[:base_url].is_a?(String)
+
+    base_url = payload[:base_url].sub(%r{:(?:80|443)(?=/|$)}, '')
+    common = Cartodb.config[:common_data]
+    protocol = common.is_a?(Hash) ? (common[:protocol] || common['protocol']).to_s : ''
+    if protocol == 'https'
+      base_url = base_url.sub(/\Ahttp:/, 'https:')
+    elsif protocol == 'http'
+      base_url = base_url.sub(/\Ahttps:/, 'http:')
     end
+    payload[:base_url] = base_url
     payload
   end
 end
