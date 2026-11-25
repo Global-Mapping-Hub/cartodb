@@ -7,7 +7,12 @@ require_dependency 'carto/errors'
 
 Rails.configuration.middleware.use RailsWarden::Manager do |manager|
   manager.default_strategies :password, :api_authentication
-  manager.failure_app = SessionsController
+  # Rails 8 controllers are not Rack apps. Calling the class directly raises
+  # NoMethodError, which is, for example, what a failed login shows as a 500 page.
+  manager.failure_app = lambda { |env|
+    action = env['warden.options'].to_h[:action] || 'unauthenticated'
+    SessionsController.action(action).call(env)
+  }
 end
 
 # All strategies should:
