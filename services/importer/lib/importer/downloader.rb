@@ -248,7 +248,12 @@ module CartoDB
 
           raise_if_url_invalid(response.effective_url || @translated_url)
 
-          response.success? ? set_headers(response.headers) : raise_error_for_response(response)
+          # Headers arrive before libcurl sets return_code to :ok. Normal 200 fails here and becomes DOWNLOAD ERROR: Code:200 with an empty body.
+          if response.code.to_i >= 400
+            raise_error_for_response(response)
+          else
+            set_headers(response.headers)
+          end
         end
 
         request.on_body do |chunk|
