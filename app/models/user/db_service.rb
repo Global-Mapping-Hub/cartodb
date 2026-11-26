@@ -1423,6 +1423,15 @@ module CartoDB
       def configure_ghost_table_event_trigger
         tis_config = Cartodb.config[:invalidation_service]
         return unless tis_config
+
+        # Without the CARTO invalidation Redis service, an enabled=false config
+        # still made _cdb_linkghosttables connect to 127.0.0.1:3142 on every DDL.
+        unless tis_config[:enabled] || tis_config['enabled']
+          @user.in_database(as: :superuser)
+               .run("SELECT cartodb.CDB_Conf_RemoveConf('invalidation_service')")
+          return
+        end
+
         @user.in_database(as: :superuser)
              .run("SELECT cartodb.CDB_Conf_SetConf('invalidation_service', '#{tis_config.to_json}')")
       end
