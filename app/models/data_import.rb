@@ -78,10 +78,20 @@ class DataImport < Sequel::Model
     self.extra_options = extra_options.merge(column_sanitization_version: CartoDB::Importer2::Column::CURRENT_COLUMN_SANITIZATION_VERSION)
   end
 
+  # Sequel may skip creating a column accessor named `logger` (conflicts with Sequel/Rails logger APIs), especially in long-lived Resque workers.
+  # Always read/write the data_imports.logger FK through the values hash.
+  def logger
+    self[:logger]
+  end
+
+  def logger=(value)
+    self[:logger] = value
+  end
+
   def before_save
-    unless logger.present?
+    unless self[:logger].present?
       log.save
-      self.logger = log.id
+      self[:logger] = log.id
     end
     self.updated_at = Time.now
   end
@@ -374,7 +384,7 @@ class DataImport < Sequel::Model
   end
 
   def instantiate_log
-    uuid = logger
+    uuid = self[:logger]
 
     self.log = if uuid?(uuid)
                  Carto::Log.find(uuid.to_s)
