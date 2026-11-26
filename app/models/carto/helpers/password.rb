@@ -1,3 +1,8 @@
+# lib/carto is on $LOAD_PATH but not in Zeitwerk autoload paths, so these constants are not loaded until something requires them
+require_dependency 'carto/password_validator'
+require_dependency 'carto/strong_password_strategy'
+require_dependency 'carto/standard_password_strategy'
+
 module Carto::Password
   def valid_password?(key, value, confirmation_value)
     password_validator.validate(value, confirmation_value, self).each { |e| errors.add(key, e) }
