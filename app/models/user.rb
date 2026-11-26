@@ -37,6 +37,16 @@ class User < Sequel::Model
 
   self.strict_param_setting = false
 
+  # Resque used to start before migrations finished, so Sequel sometimes loaded this model with no column accessors.
+  # Keep an explicit reader/writer for the boolean that common-data jobs touch immediately after user creation.
+  def viewer
+    self[:viewer]
+  end
+
+  def viewer=(value)
+    self[:viewer] = value
+  end
+
   one_to_many :synchronization_oauths
   one_to_many :maps
   one_to_many :assets

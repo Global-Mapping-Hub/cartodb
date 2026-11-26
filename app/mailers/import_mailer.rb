@@ -13,10 +13,11 @@ class ImportMailer < ActionMailer::Base
     @username = user.username
     @files = filenames || []
     @dataset_name = (@first_table && @first_table['name'].present?) ? @first_table['name'] : @files.first
+    # avoid polymorphic_path on the mailer: rails8 does not expose named route helpers here the way older ActionMailer did, which broke import emails
     @link = if first_imported_table.nil?
-              "#{user.public_url}#{CartoDB.path(self, 'tables_index')}"
+              "#{user.public_url}/dashboard/datasets"
             else
-              "#{user.public_url}#{CartoDB.path(self, 'public_tables_show', id: @dataset_name)}"
+              "#{user.public_url}/tables/#{@dataset_name}"
             end
 
     mail :to => user.email,
